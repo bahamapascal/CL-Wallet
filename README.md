@@ -13,8 +13,10 @@ Please note that this is is still in Alpha stages and as such not all functional
 
 ### Usage:
 
-You need Python 2.7 (not compatible yet with python 3) and the PyOTA library `pip install pyota`
+You need:
+ - Python 2.7 (not compatible yet with python 3) 
+ - and the PyOTA library `pip install pyota`
 
 On windows you can just use the "Start CL Wallet.bat". On any other OS you need to open "Wallet.py" via command line.
-Iportent: If you start via command line, make sure to use a console that has a width of 140 columns.
+Important: If you start via command line, make sure to use a console that has a width of 140 columns.
 
