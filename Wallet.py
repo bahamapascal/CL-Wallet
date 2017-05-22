@@ -484,7 +484,7 @@ def full_account_info():
                 all_address_data += data
 
         print(all_address_data)
-        fal_data = "Fisrt index with balance: " + str(
+        fal_data = "First index with balance: " + str(
             fal_balance[0]["f_index"]) + "\n" + "Last index with balance is: " + str(fal_balance[0]["l_index"])
         print(fal_data)
     else:
@@ -678,7 +678,7 @@ def prepare_transferes():
                 value=transfer_value,
             )
         prepared_transferes.append(txn)
-        print("Do you want to prepare another transfere?")
+        print("Do you want to prepare another transfer?")
         yes = yes_no_user_input()
         if not yes:
             new_transfer = False
