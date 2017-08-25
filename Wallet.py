@@ -34,17 +34,14 @@ def get_checksum(address):
 
 
 '''
-Verifys the integrety of a address
+Verifies the integrity of a address
 and returns True or False
 '''
 
 
 def verify_checksum(checksum, address):
     actual_checksum = get_checksum(address)
-    if actual_checksum == checksum:
-        return True
-    else:
-        return False
+    return actual_checksum == checksum
 
 
 '''
@@ -68,7 +65,7 @@ def yes_no_user_input():
 
 
 '''
-Askes the user to enter a number
+Asks the user to enter a number
 and will only accept the user input
 if it's a valid number
 '''
@@ -100,7 +97,7 @@ def create_file_name():
 
 '''
 The login screen.
-Will make sure that only a valid seed is enterd
+Will make sure that only a valid seed is entered
 '''
 
 
@@ -109,9 +106,9 @@ def log_in():
           'Account login---------------------------------------'
           '-----------------'
           '\n\nA seed should only contain the letters A-Z and 9.'
-          ' Lowercase letters will automaticaly be coverted to\n'
+          ' Lowercase letters will automatically be converted to\n'
           'uppercase and everything else that is not A-Z,'
-          ' will be convertet to a 9.'
+          ' will be converted to a 9.'
           )
     raw_seed = unicode(getpass.getpass('\n \nPlease enter your'
                                        ' seed to login to your account: '
@@ -472,7 +469,7 @@ def address_balance(address):
 Checks all addresses that are saved
 in the account file and updates there balance.
 start_index can be set in order to ignore
-all addresses befor the start index
+all addresses before the start index
 '''
 
 
@@ -563,7 +560,7 @@ def find_balance(count):
                 print('Balance found! \n' +
                       '   Index: ' + str(index) + '\n' +
                       '   Address: ' + str(address) + '\n' +
-                      '   Balanc: ' + convert_units(balance) + '\n')
+                      '   Balance: ' + convert_units(balance) + '\n')
                 margin = max_gap
                 if count - i <= max_gap:
                     count += max_gap
@@ -677,7 +674,7 @@ def standard_account_info():
         if yes:
             print('\n\nOkay great, I will generate addresses'
                   ' and check them for balance!\n'
-                  'Plese tell me how many addresses'
+                  'Please tell me how many addresses'
                   ' I should check. If you say 100\n'
                   'I will generate addresses until balance'
                   ' is found or until 100 addresses\n'
@@ -744,7 +741,7 @@ Will ask the user to enter the amount and Units (Iota, MegaIota, GigaIota,etc.)
 
 def transfer_value_user_input():
     print('\n\nEnter a number and the the unit size.\n'
-          'Avaliable units are \'i\'(Iota), '
+          'Avalaible units are \'i\'(Iota), '
           '\'ki\'(KiloIota), \'mi\'(MegaIota), '
           '\'gi\'(GigaIota) and \'ti\'(TerraIota)\n'
           'Example: If you enter \'12.3 gi\', I will send 12.3 GigaIota\n')
@@ -848,8 +845,8 @@ def prepare_transferes():
                                           'the receiving address: ')
 
             if len(recipient_address) == 81:
-                print('You enterd a address without checksum. '
-                      'Are you sure you want to continiue?')
+                print('You entered a address without checksum. '
+                      'Are you sure you want to continue?')
                 yes = yes_no_user_input()
                 if yes:
                     get_recipient_address = False
@@ -863,7 +860,7 @@ def prepare_transferes():
                 else:
                     print('Invalid address!! Please try again!')
             else:
-                print('\nYou enterd a invalid address. '
+                print('\nYou entered a invalid address. '
                       'Address must be 81 or 90 Char long!')
 
         recipient_address = bytes(recipient_address)
@@ -1136,7 +1133,7 @@ def print_transaction_history(full_history=False):
 
 
 '''
-Gets all assosiated transactions from
+Gets all associated transactions from
 the saved addresses and saves the transaction data in the account file
 '''
 
@@ -1169,7 +1166,7 @@ def get_transfers(full_history):
             new_txn_hashes.append(txn_hash)
 
     if len(new_txn_hashes) > 0:
-        print('Retreaving and saving transfer data from '
+        print('Retrieving and saving transfer data from '
               + str(len(new_txn_hashes))
               + ' transaction(s)!\n'
               'Please wait...\n'
@@ -1193,7 +1190,7 @@ def get_transfers(full_history):
             address = str(txn.address)
 
             '''
-            Placeholder untill message decoding is added
+            Placeholder until message decoding is added
             '''
             message = 'some message'
             value = str(txn.value)
