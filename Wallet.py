@@ -3,6 +3,7 @@ import hashlib
 import json
 import time
 import datetime
+from helpers import is_py2, fetch_user_input
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
@@ -18,8 +19,7 @@ Returns a sha256 hash of the seed
 
 
 def create_seed_hash(seed):
-    s = hashlib.sha256(seed)
-    return s.hexdigest()
+    return hashlib.sha256(seed.encode('utf-8')).hexdigest()
 
 
 '''
@@ -53,7 +53,7 @@ and returns True or False accordingly
 def yes_no_user_input():
 
     while True:
-        yes_no = raw_input('Enter Y for yes or N for no: ')
+        yes_no = fetch_user_input('Enter Y for yes or N for no: ')
         yes_no = yes_no.lower()
         if yes_no == 'n' or yes_no == 'no':
             return False
@@ -74,7 +74,7 @@ if it's a valid number
 def numbers_user_input(prompt):
 
     while True:
-        user_input = raw_input(prompt)
+        user_input = fetch_user_input(prompt)
         number = user_input.isdigit()
         if number:
             return int(user_input)
@@ -110,9 +110,11 @@ def log_in():
           'uppercase and everything else that is not A-Z,'
           ' will be converted to a 9.'
           )
-    raw_seed = unicode(getpass.getpass('\n \nPlease enter your'
-                                       ' seed to login to your account: '
-                                       ))
+
+    password = getpass.getpass('\n \nPlease enter your'
+                            ' seed to login to your account: '
+                        )
+    raw_seed = unicode(password) if is_py2 else str(password)
     raw_seed = raw_seed.upper()
     raw_seed = list(raw_seed)
     allowed = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ9')
@@ -160,7 +162,7 @@ def first_login_prompt(data):
     yes = yes_no_user_input()
 
     if yes:
-        data['account_data'][0]['settings'][0]['host'] = raw_input(
+        data['account_data'][0]['settings'][0]['host'] = fetch_user_input(
             '\nPlease enter the host'
             ' you want to connect to: '
         )
@@ -224,7 +226,7 @@ def set_settings():
 
     stay_in_settings = True
     while stay_in_settings:
-        user_command_input = raw_input('Please enter a command: ')
+        user_command_input = fetch_user_input('Please enter a command: ')
 
         if user_command_input == 'min_weight_magnitude':
             settings[0]['min_weight_magnitude'] = \
@@ -236,7 +238,7 @@ def set_settings():
                   + '\n\n')
 
         elif user_command_input == 'unit':
-            units = raw_input('\nPlease enter "i","ki","mi","gi" or "ti": ')
+            units = fetch_user_input('\nPlease enter "i","ki","mi","gi" or "ti": ')
             if units == 'i'\
                     or units == 'ki' \
                     or units == 'mi'\
@@ -254,7 +256,7 @@ def set_settings():
                 print('Please try again!\n\n')
 
         elif user_command_input == 'host':
-            settings[0]['host'] = raw_input('\nPlease enter the'
+            settings[0]['host'] = fetch_user_input('\nPlease enter the'
                                             ' host you want to connect to: ')
             with open(file_name, 'w') as account_data:
                 json.dump(raw_account_data, account_data)
@@ -747,7 +749,7 @@ def transfer_value_user_input():
           'Example: If you enter \'12.3 gi\', I will send 12.3 GigaIota\n')
     ask_user = True
     while ask_user:
-        user_input = raw_input('Please enter the amount to send: ')
+        user_input = fetch_user_input('Please enter the amount to send: ')
         user_input = user_input.upper()
         user_input_as_list = list(user_input)
 
@@ -841,7 +843,7 @@ def prepare_transferes():
     while new_transfer:
         get_recipient_address = True
         while get_recipient_address:
-            recipient_address = raw_input('\nPlease enter '
+            recipient_address = fetch_user_input('\nPlease enter '
                                           'the receiving address: ')
 
             if len(recipient_address) == 81:
@@ -864,8 +866,8 @@ def prepare_transferes():
                       'Address must be 81 or 90 Char long!')
 
         recipient_address = bytes(recipient_address)
-        user_message = raw_input('Please enter a message: ')
-        user_tag = raw_input('Please enter a tag: ')
+        user_message = fetch_user_input('Please enter a message: ')
+        user_tag = fetch_user_input('Please enter a tag: ')
         user_tag = bytes(user_tag)
         transfer_value = transfer_value_user_input()
         txn = \
@@ -912,7 +914,7 @@ def review_transfers(prepared_transferes):
 
     ask_user = True
     while ask_user:
-        user_input = raw_input('\nEnter \'confirm\' to send the transfer(s)\n'
+        user_input = fetch_user_input('\nEnter \'confirm\' to send the transfer(s)\n'
                                'Enter \'cancel\' to cancel the transfer(s)')
         user_input = user_input.upper()
 
@@ -1250,7 +1252,7 @@ def main():
 
         while logged_in:
 
-            user_command_input = raw_input('\n \nPlease enter a command.'
+            user_command_input = fetch_user_input('\n \nPlease enter a command.'
                                            ' Type \'HELP\' to see '
                                            'all avaliable commands:  ')
             print('\n')
