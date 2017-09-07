@@ -3,14 +3,14 @@ import hashlib
 import json
 import time
 import datetime
-from helpers import is_py2, fetch_user_input
+from helpers import is_py2, fetch_user_input, pretty_print
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
 from iota.crypto.addresses import AddressGenerator
 
 
-print('\nStarting wallet...\n\n\n\n')
+pretty_print('\nStarting wallet...\n\n\n\n')
 
 
 '''
@@ -60,8 +60,10 @@ def yes_no_user_input():
         elif yes_no == 'y' or yes_no == 'yes':
             return True
         else:
-            print('Ups seems like you entered something'
-                  'different then "Y" or "N" ')
+            pretty_print(
+                'Ups seems like you entered something'
+                'different then "Y" or "N" '
+                )
 
 
 '''
@@ -79,7 +81,7 @@ def numbers_user_input(prompt):
         if number:
             return int(user_input)
         elif not number:
-            print('You didn\'t enter a number')
+            pretty_print('You didn\'t enter a number', color='red')
 
 
 '''
@@ -102,14 +104,16 @@ Will make sure that only a valid seed is entered
 
 
 def log_in():
-    print('\n\n\n------------------------------------------------'
-          'Account login---------------------------------------'
-          '-----------------'
-          '\n\nA seed should only contain the letters A-Z and 9.'
-          ' Lowercase letters will automatically be converted to\n'
-          'uppercase and everything else that is not A-Z,'
-          ' will be converted to a 9.'
-          )
+    pretty_print(
+        '\n\n\n------------------------------------------------'
+        'Account login---------------------------------------'
+        '-----------------'
+        '\n\nA seed should only contain the letters A-Z and 9.'
+        ' Lowercase letters will automatically be converted to\n'
+        'uppercase and everything else that is not A-Z,'
+        ' will be converted to a 9.',
+        color='green'
+        )
 
     password = getpass.getpass('\n \nPlease enter your'
                             ' seed to login to your account: '
@@ -131,17 +135,17 @@ def log_in():
     while len(seed) < 81:
         seed += '9'
 
-    print('\n\nThe Sha256 hash of your seed is:')
-    print(create_seed_hash(seed))
+    pretty_print('\n\nThe Sha256 hash of your seed is:')
+    pretty_print(create_seed_hash(seed), color='blue')
 
-    print('Should the seed be displayed for review?\n')
+    pretty_print('Should the seed be displayed for review?\n', color='red')
 
     yes = yes_no_user_input()
     if yes:
-        print('You entered ' + seed + ' as seed.')
+        pretty_print('You entered ' + seed + ' as seed.')
 
     elif not yes:
-        print('OK, seed won\'t be displayed!')
+        pretty_print('OK, seed won\'t be displayed!', color='blue')
 
     return seed
 
@@ -154,11 +158,13 @@ The node address is then saved in the account file
 
 
 def first_login_prompt(data):
-    print('\n\nSeems like its your first time logging in to this seed!\n'
+    pretty_print(
+          '\n\nSeems like its your first time logging in to this seed!\n'
           'By default the wallet will connect'
           ' to testnet node http://bahamapascal-tn1.ddns.net:14200'
           '(while in Beta)\n'
-          'Do you want to connect to another host?\n\n')
+          'Do you want to connect to another host?\n\n'
+    )
     yes = yes_no_user_input()
 
     if yes:
@@ -167,14 +173,17 @@ def first_login_prompt(data):
             ' you want to connect to: '
         )
 
-        print('\nHost set to '
-              + str(data['account_data'][0]['settings'][0]['host'])
-              + '\n\n')
+        pretty_print(
+            '\nHost set to '
+            + str(data['account_data'][0]['settings'][0]['host'])
+            + '\n\n',
+            color='blue'
+        )
 
         return data
 
     else:
-        print('Okay, I won\'t change the host!\n\n')
+        pretty_print('Okay, I won\'t change the host!\n\n')
         return data
 
 
@@ -206,7 +215,7 @@ def read_account_data():
             })
             data = first_login_prompt(data)
             json.dump(data, account_data)
-            print('Created new account file!')
+            pretty_print('Created new account file!',  color='blue')
             return data
 
 
@@ -217,12 +226,14 @@ The settings are saved in the account file
 
 
 def set_settings():
-    print('Enter "min_weight_magnitude" to set the minWeightMagnitude')
-    print('Enter "unit" to set the Units used'
-          ' to display iota tokens (i,Ki,Mi,Gi,Ti)')
-    print('Enter "host" to set a new host to connect to')
-    print('Enter "current_settings" to see ')
-    print('Enter "back" to quit the settings menu\n\n')
+    pretty_print('Enter "min_weight_magnitude" to set the minWeightMagnitude')
+    pretty_print(
+        'Enter "unit" to set the Units used'
+        ' to display iota tokens (i,Ki,Mi,Gi,Ti)'
+    )
+    pretty_print('Enter "host" to set a new host to connect to')
+    pretty_print('Enter "current_settings" to see ')
+    pretty_print('Enter "back" to quit the settings menu\n\n')
 
     stay_in_settings = True
     while stay_in_settings:
@@ -233,9 +244,12 @@ def set_settings():
                 numbers_user_input('\nPlease enter the minWeightMagnitude: ')
             with open(file_name, 'w') as account_data:
                 json.dump(raw_account_data, account_data)
-            print('MinWeightMagnitude set to '
-                  + str(settings[0]['min_weight_magnitude'])
-                  + '\n\n')
+            pretty_print(
+                'MinWeightMagnitude set to '
+                + str(settings[0]['min_weight_magnitude'])
+                + '\n\n',
+                color='blue'
+            )
 
         elif user_command_input == 'unit':
             units = fetch_user_input('\nPlease enter "i","ki","mi","gi" or "ti": ')
@@ -247,36 +261,56 @@ def set_settings():
                 settings[0]['units'] = units
                 with open(file_name, 'w') as account_data:
                     json.dump(raw_account_data, account_data)
-                print('Units set to ' + str(settings[0]['units']) + '\n\n')
+                pretty_print(
+                    'Units set to ' + str(settings[0]['units']) + '\n\n',
+                    color='blue'
+                )
 
             else:
-                print('\n\nUps you seemed to have'
-                      ' entered something else'
-                      ' then "i","ki","mi","gi" or "ti" ')
-                print('Please try again!\n\n')
+                pretty_print(
+                    '\n\nUps you seemed to have'
+                    ' entered something else'
+                    ' then "i","ki","mi","gi" or "ti" ',
+                    color='red'
+                )
+                pretty_print(
+                    'Please try again!\n\n',
+                    color='green'
+                )
 
         elif user_command_input == 'host':
-            settings[0]['host'] = fetch_user_input('\nPlease enter the'
-                                            ' host you want to connect to: ')
+            settings[0]['host'] = fetch_user_input(
+                '\nPlease enter the'
+                ' host you want to connect to: '
+            )
             with open(file_name, 'w') as account_data:
                 json.dump(raw_account_data, account_data)
-            print('Host set to ' + str(settings[0]['host']) + '\n\n')
+            pretty_print(
+                'Host set to ' + str(settings[0]['host']) + '\n\n',
+                color='blue'
+            )
 
         elif user_command_input == 'current_settings':
             min_weight_magnitude = settings[0]['min_weight_magnitude']
             units = settings[0]['units']
             host = settings[0]['host']
-            print('\n\nMinWeightMagnitude is currently set to '
-                  + str(min_weight_magnitude) + '\n' +
-                  'Units are set to ' + str(units) + '\n' +
-                  'Host is set to ' + str(host) + '\n\n')
+            pretty_print(
+                '\n\nMinWeightMagnitude is currently set to '
+                + str(min_weight_magnitude) + '\n' +
+                'Units are set to ' + str(units) + '\n' +
+                'Host is set to ' + str(host) + '\n\n',
+                color='blue'
+            )
 
         elif user_command_input == 'back':
             stay_in_settings = False
 
         else:
-            print('Ups I didn\'t understand'
-                  ' that command. Please try again!')
+            pretty_print(
+                'Ups I didn\'t understand'
+                ' that command. Please try again!',
+                color='red'
+            )
 
 
 '''
@@ -488,9 +522,12 @@ def update_addresses_balance(start_index=0):
             max_index = index
 
     if max_index < start_index:
-        print('Start index was not found.'
-              ' You should generate more addresses'
-              ' or use a lower start index')
+        pretty_print(
+            'Start index was not found.'
+            ' You should generate more addresses'
+            ' or use a lower start index',
+            color='red'
+        )
 
 
 '''
@@ -539,14 +576,18 @@ def find_balance(count):
     margin = 4
     i = 0
     balance_found = False
-    print('Generating addresses'
-          ' and checking for balance, please wait...\n'
-          )
+    pretty_print(
+        'Generating addresses'
+        ' and checking for balance, please wait...\n',
+        )
 
     while i < count and margin > 0:
-        print('Checking address '
-              + str(i+1) + ' in range of '
-              + str(count))
+        pretty_print(
+            'Checking address '
+            + str(i+1) + ' in range of '
+            + str(count),
+            color='green'
+        )
         generate_addresses(1)
         index_list = []
         for data in address_data:
@@ -559,10 +600,13 @@ def find_balance(count):
             if index == max_index and balance > 0:
                 balance_found = True
                 address = data['address']
-                print('Balance found! \n' +
-                      '   Index: ' + str(index) + '\n' +
-                      '   Address: ' + str(address) + '\n' +
-                      '   Balance: ' + convert_units(balance) + '\n')
+                pretty_print(
+                    'Balance found! \n' +
+                    '   Index: ' + str(index) + '\n' +
+                    '   Address: ' + str(address) + '\n' +
+                    '   Balance: ' + convert_units(balance) + '\n',
+                    color='green'
+                )
                 margin = max_gap
                 if count - i <= max_gap:
                     count += max_gap
@@ -572,7 +616,7 @@ def find_balance(count):
 
         i += 1
     if not balance_found:
-        print('No address with balance found!')
+        pretty_print('No address with balance found!', color='red')
 
 
 '''
@@ -597,7 +641,7 @@ def get_deposit_address():
                 return deposit_address
             elif not integrity:
                 return 'Invalid checksum!!!'
-        print('Generating address...')
+        pretty_print('Generating address...', color='blue')
         generate_addresses(1)
         for p in address_data:
             address = p['address']
@@ -638,15 +682,15 @@ def full_account_info():
                        '   Invalid Checksum!!!' + '\n'
                 all_address_data += data
 
-        print(all_address_data)
+        pretty_print(all_address_data)
         fal_data = 'First index with balance: ' + str(
             fal_balance[0]['f_index']) +\
             '\n' +\
             'Last index with balance is: ' +\
             str(fal_balance[0]['l_index'])
-        print(fal_data)
+        pretty_print(fal_data)
     else:
-        print('No Data to display!')
+        pretty_print('No Data to display!', color='red')
 
 
 '''
@@ -667,22 +711,26 @@ def standard_account_info():
     update_fal_balance()
 
     if address_count < 1:
-        print('\n\nThis seems to be the first time '
-              'you are using this account with the CL wallet!\n'
-              'If you are expecting balance on this account'
-              ' you should scan for balance.\n'
-              'Do you want to scan for balance?\n\n ')
+        pretty_print(
+            '\n\nThis seems to be the first time '
+            'you are using this account with the CL wallet!\n'
+            'If you are expecting balance on this account'
+            ' you should scan for balance.\n'
+            'Do you want to scan for balance?\n\n '
+        )
         yes = yes_no_user_input()
         if yes:
-            print('\n\nOkay great, I will generate addresses'
-                  ' and check them for balance!\n'
-                  'Please tell me how many addresses'
-                  ' I should check. If you say 100\n'
-                  'I will generate addresses until balance'
-                  ' is found or until 100 addresses\n'
-                  'have been generated.\n'
-                  'So, whats the maximum number of '
-                  'addresses I should check?\n\n')
+            pretty_print(
+                '\n\nOkay great, I will generate addresses'
+                ' and check them for balance!\n'
+                'Please tell me how many addresses'
+                ' I should check. If you say 100\n'
+                'I will generate addresses until balance'
+                ' is found or until 100 addresses\n'
+                'have been generated.\n'
+                'So, whats the maximum number of '
+                'addresses I should check?\n\n'
+            )
             prompt = 'Please enter the max number of addresses to check: '
             addresses_to_check = numbers_user_input(prompt)
             if addresses_to_check > 0:
@@ -690,12 +738,14 @@ def standard_account_info():
                 standard_account_info()
 
             elif addresses_to_check == 0:
-                print('You entered 0! I won\'t check any addresses.')
+                pretty_print('You entered 0! I won\'t check any addresses.', color='green')
         elif not yes:
-            print('\nOkay, then I will just generate a deposit address.\n'
-                  'In case you wan\'t to generate addresses'
-                  ' after that, you can use the \'find balance\' command.\n'
-                  'Generating deposit address...\n\n\n')
+            pretty_print(
+                '\nOkay, then I will just generate a deposit address.\n'
+                'In case you wan\'t to generate addresses'
+                ' after that, you can use the \'find balance\' command.\n'
+                'Generating deposit address...\n\n\n'
+            )
             generate_addresses(1)
             standard_account_info()
             return
@@ -727,13 +777,13 @@ def standard_account_info():
                 all_address_data += data
 
         if total_balance > 0:
-            print(all_address_data)
-            print('\n' + 'Deposit address: ' + str(get_deposit_address()))
-            print('\nTotal Balance: ' + convert_units(total_balance))
+            pretty_print(all_address_data)
+            pretty_print('\n' + 'Deposit address: ' + str(get_deposit_address()), color='blue')
+            pretty_print('\nTotal Balance: ' + convert_units(total_balance))
 
         else:
-            print('No addresses with balance!')
-            print('\n' + 'Deposit address: ' + str(get_deposit_address()))
+            pretty_print('No addresses with balance!', color='red')
+            pretty_print('\n' + 'Deposit address: ' + str(get_deposit_address()), color='blue')
 
 
 '''
@@ -742,11 +792,13 @@ Will ask the user to enter the amount and Units (Iota, MegaIota, GigaIota,etc.)
 
 
 def transfer_value_user_input():
-    print('\n\nEnter a number and the the unit size.\n'
-          'Avalaible units are \'i\'(Iota), '
-          '\'ki\'(KiloIota), \'mi\'(MegaIota), '
-          '\'gi\'(GigaIota) and \'ti\'(TerraIota)\n'
-          'Example: If you enter \'12.3 gi\', I will send 12.3 GigaIota\n')
+    pretty_print(
+        '\n\nEnter a number and the the unit size.\n'
+        'Avalaible units are \'i\'(Iota), '
+        '\'ki\'(KiloIota), \'mi\'(MegaIota), '
+        '\'gi\'(GigaIota) and \'ti\'(TerraIota)\n'
+        'Example: If you enter \'12.3 gi\', I will send 12.3 GigaIota\n'
+    )
     ask_user = True
     while ask_user:
         user_input = fetch_user_input('Please enter the amount to send: ')
@@ -778,58 +830,82 @@ def transfer_value_user_input():
                 if unit == 'I':
                     value = value
                     if 1 > value > 0:
-                        print('You entered a amount greater '
-                              'then 0 but smaller then 1 Iota!\n'
-                              'Can only send whole Iotas...\n ')
+                        pretty_print(
+                            'You entered a amount greater '
+                            'then 0 but smaller then 1 Iota!\n'
+                            'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
                     else:
                         return int(value)
 
                 elif unit == 'KI':
                     value *= 1000
                     if 1 > value > 0:
-                        print('You entered a amount greater '
-                              'then 0 but smaller then 1 Iota!\n'
-                              'Can only send whole Iotas...\n ')
+                        pretty_print(
+                            'You entered a amount greater '
+                            'then 0 but smaller then 1 Iota!\n'
+                            'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
                     else:
                         return int(value)
 
                 elif unit == 'MI':
                     value *= 1000000
                     if 1 > value > 0:
-                        print('You entered a amount greater then 0 '
-                              'but smaller then 1 Iota!\n'
-                              'Can only send whole Iotas...\n ')
+                        pretty_print(
+                            'You entered a amount greater then 0 '
+                            'but smaller then 1 Iota!\n'
+                            'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
                     else:
                         return int(value)
 
                 elif unit == 'GI':
                     value *= 1000000000
                     if 1 > value > 0:
-                        print('You entered a amount greater then 0 '
-                              'but smaller then 1 Iota!\n'
-                              'Can only send whole Iotas...\n ')
+                        pretty_print(
+                            'You entered a amount greater then 0 '
+                            'but smaller then 1 Iota!\n'
+                            'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
                     else:
                         return int(value)
 
                 elif unit == 'TI':
                     value *= 1000000000000
                     if 1 > value > 0:
-                        print('You entered a amount greater then 0 '
-                              'but smaller then 1 Iota!\n'
-                              'Can only send whole Iotas...\n ')
+                        pretty_print(
+                            'You entered a amount greater then 0 '
+                            'but smaller then 1 Iota!\n'
+                            'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
                     else:
                         return int(value)
                 else:
-                    print('You didn\'t enter a valid '
-                          'unit size! Please try again\n')
+                    pretty_print(
+                        'You didn\'t enter a valid '
+                        'unit size! Please try again\n',
+                        color='red'
+                    )
 
             except:
-                print('You didn\'t enter a valid '
-                      'value! Please try again\n')
+                pretty_print(
+                    'You didn\'t enter a valid '
+                    'value! Please try again\n',
+                    color='red'
+                )
 
         else:
-            print('You didn\'t enter a valid '
-                  'value! Please try again\n')
+            pretty_print(
+                'You didn\'t enter a valid '
+                'value! Please try again\n',
+                color='red'
+            )
 
 
 '''
@@ -847,23 +923,31 @@ def prepare_transferes():
                                           'the receiving address: ')
 
             if len(recipient_address) == 81:
-                print('You entered a address without checksum. '
-                      'Are you sure you want to continue?')
+                pretty_print(
+                    'You entered a address without checksum. '
+                    'Are you sure you want to continue?',
+                    color='blue'
+                )
                 yes = yes_no_user_input()
                 if yes:
                     get_recipient_address = False
                 else:
-                    print('Good choice! '
-                          'Addresses with checksum are a lot safer to use.')
+                    pretty_print(
+                        'Good choice! '
+                        'Addresses with checksum are a lot safer to use.'
+                    )
             elif len(recipient_address) == 90:
                 is_valid = is_valid_address(recipient_address)
                 if is_valid:
                     get_recipient_address = False
                 else:
-                    print('Invalid address!! Please try again!')
+                    pretty_print('Invalid address!! Please try again!', color='red')
             else:
-                print('\nYou entered a invalid address. '
-                      'Address must be 81 or 90 Char long!')
+                pretty_print(
+                    '\nYou entered a invalid address. '
+                    'Address must be 81 or 90 Char long!',
+                    color='red'
+                )
 
         recipient_address = bytes(recipient_address)
         user_message = fetch_user_input('Please enter a message: ')
@@ -881,7 +965,7 @@ def prepare_transferes():
                 value=transfer_value,
             )
         prepared_transferes.append(txn)
-        print('Do you want to prepare another transfer?')
+        pretty_print('Do you want to prepare another transfer?')
         yes = yes_no_user_input()
         if not yes:
             new_transfer = False
@@ -905,12 +989,15 @@ def review_transfers(prepared_transferes):
                '--------------------------------------------' \
                '------------------\n'
         transfers_to_print += address + '  |  ' + value + '\n' + line
-    print('\n\n\nDestination:                                  '
-          '                                              |  Value:\n'
-          '-----------------------------------------------------'
-          '---------------------------------------------------------')
-    print(transfers_to_print)
-    print('\n\nPlease review the transfer(s) carefully!\n')
+    pretty_print(
+        '\n\n\nDestination:                                  '
+        '                                              |  Value:\n'
+        '-----------------------------------------------------'
+        '---------------------------------------------------------',
+        color='green'
+    )
+    pretty_print(transfers_to_print)
+    pretty_print('\n\nPlease review the transfer(s) carefully!\n', color='blue')
 
     ask_user = True
     while ask_user:
@@ -919,20 +1006,22 @@ def review_transfers(prepared_transferes):
         user_input = user_input.upper()
 
         if user_input == 'CONFIRM':
-            print('\n\nOkay, sending transfer(s) now. '
-                  'This can take a while...')
+            pretty_print(
+                '\n\nOkay, sending transfer(s) now. '
+                'This can take a while...'
+            )
             ask_user = False
             try:
                 send_transfer(prepared_transferes)
             except:
-                print('A error occurred :(')
+                pretty_print('A error occurred :(', color='red')
 
         elif user_input == 'CANCEL':
-            print('\n\nTransfer(s) canceled!')
+            pretty_print('\n\nTransfer(s) canceled!', color='red')
             ask_user = False
 
         else:
-            print('Ups, I didn\'t understand that. Please try again!')
+            pretty_print('Ups, I didn\'t understand that. Please try again!', color='red')
 
 
 '''
@@ -942,7 +1031,7 @@ and sends it to the IOTA node for attaching itto the tangle
 
 
 def send_transfer(prepared_transferes):
-    print('Sending transfer, this can take a while...')
+    pretty_print('Sending transfer, this can take a while...')
     change_addy = bytes(get_deposit_address())
     api = Iota(iota_node, seed)
     api.send_transfer(
@@ -951,7 +1040,7 @@ def send_transfer(prepared_transferes):
         change_address=change_addy,
         min_weight_magnitude=18
         )
-    print('Transaction compleated!')
+    pretty_print('Transaction completed!', color='green')
 
 
 '''
@@ -1059,14 +1148,15 @@ def print_transaction_history(full_history=False):
             old_confirmed_transactions.append(data)
 
     if len(new_transactions) > 0 and not full_history:
-        print('\n\n\nNew Transactions')
-        print('--------------------------------------------------'
-              '--------------------------------------------------'
-              '-------------'
-              )
+        pretty_print('\n\n\nNew Transactions')
+        pretty_print(
+            '--------------------------------------------------'
+            '--------------------------------------------------'
+            '-------------'
+            )
         for addy in addresses_with_new_transactions:
             addy = address_checksum(str(addy))
-            print('\nTransactions to/from: ' + str(addy) + '\n')
+            pretty_print('\nTransactions to/from: ' + str(addy) + '\n')
             for data in new_transactions:
                     address = data['address']
                     if address == addy:
@@ -1076,21 +1166,25 @@ def print_transaction_history(full_history=False):
                         bundle = data['bundle']
                         tag = data['tag']
                         is_confirmed = data['is_confirmed']
-                        print('' + txn_time + '\n' +
-                              '    Txn Hash: '
-                              + transaction_hash + '  ' +
-                              str(convert_units(value)) + '\n' +
-                              '    Bundle: ' + bundle + '\n' +
-                              '    Tag: ' + tag + '\n' +
-                              '    Confirmed: ' + is_confirmed + '\n')
+                        pretty_print(
+                            '' + txn_time + '\n' +
+                            '    Txn Hash: '
+                            + transaction_hash + '  ' +
+                            str(convert_units(value)) + '\n' +
+                            '    Bundle: ' + bundle + '\n' +
+                            '    Tag: ' + tag + '\n' +
+                            '    Confirmed: ' + is_confirmed + '\n'
+                        )
 
     if len(old_confirmed_transactions) > 0 and not full_history:
-        print('\n\n\nOld Confirmed Transactions')
-        print('--------------------------------------------------------'
-              '--------------------------------------------------------')
+        pretty_print('\n\n\nOld Confirmed Transactions')
+        pretty_print(
+            '--------------------------------------------------------'
+            '--------------------------------------------------------'
+        )
         for addy in addresses_with_confirmed_transactions:
             addy = address_checksum(str(addy))
-            print('\nTransactions to/from: ' + str(addy) + '\n')
+            pretty_print('\nTransactions to/from: ' + str(addy) + '\n')
 
             for data in old_confirmed_transactions:
                     address = data['address']
@@ -1100,22 +1194,26 @@ def print_transaction_history(full_history=False):
                         value = data['value']
                         bundle = data['bundle']
                         tag = data['tag']
-                        print(' ' + txn_time + '\n' +
-                              '    Txn Hash: ' + transaction_hash +
-                              '  ' + str(convert_units(value)) + '\n' +
-                              '    Bundle: ' + bundle + '\n' +
-                              '    Tag: ' + tag + '\n')
+                        pretty_print(
+                            ' ' + txn_time + '\n' +
+                            '    Txn Hash: ' + transaction_hash +
+                            '  ' + str(convert_units(value)) + '\n' +
+                            '    Bundle: ' + bundle + '\n' +
+                            '    Tag: ' + tag + '\n'
+                        )
 
     if len(new_transactions) == 0 and\
        len(old_confirmed_transactions) == 0 and\
        len(all_transactions) == 0:
 
-        print('No transactions in history!')
+        pretty_print('No transactions in history!', color='red')
 
     elif full_history:
-        print('\n\n\nFull transaction history')
-        print('--------------------------------------------------------'
-              '--------------------------------------------------------\n\n')
+        pretty_print('\n\n\nFull transaction history')
+        pretty_print(
+            '--------------------------------------------------------'
+            '--------------------------------------------------------\n\n'
+        )
         for data in all_transactions:
             address = data['address']
             txn_time = data['txn_time']
@@ -1124,14 +1222,16 @@ def print_transaction_history(full_history=False):
             bundle = data['bundle']
             tag = data['tag']
             is_confirmed = data['is_confirmed']
-            print(' ' + txn_time + '\n' +
-                  ' To/From: ' + address + '\n'
-                  '          Txn Hash: ' +
-                  transaction_hash + '  ' +
-                  str(convert_units(value)) + '\n' +
-                  '          Bundle: ' + bundle + '\n' +
-                  '          Tag: ' + tag + '\n' +
-                  '          Confirmed: ' + is_confirmed + '\n')
+            pretty_print(
+                ' ' + txn_time + '\n' +
+                ' To/From: ' + address + '\n'
+                '          Txn Hash: ' +
+                transaction_hash + '  ' +
+                str(convert_units(value)) + '\n' +
+                '          Bundle: ' + bundle + '\n' +
+                '          Tag: ' + tag + '\n' +
+                '          Confirmed: ' + is_confirmed + '\n'
+            )
 
 
 '''
@@ -1168,11 +1268,13 @@ def get_transfers(full_history):
             new_txn_hashes.append(txn_hash)
 
     if len(new_txn_hashes) > 0:
-        print('Retrieving and saving transfer data from '
-              + str(len(new_txn_hashes))
-              + ' transaction(s)!\n'
-              'Please wait...\n'
-              )
+        pretty_print(
+            'Retrieving and saving transfer data from '
+            + str(len(new_txn_hashes))
+            + ' transaction(s)!\n'
+            'Please wait...\n',
+            color='blue'
+        )
 
         for txn_hash in new_txn_hashes:
             txn_hash_as_bytes = bytes(txn_hash)
@@ -1224,7 +1326,6 @@ the users commands. All functions above will be called
 directly or indirectly through this function.
 '''
 
-
 def main():
     ask_seed = True
     while ask_seed:
@@ -1255,7 +1356,7 @@ def main():
             user_command_input = fetch_user_input('\n \nPlease enter a command.'
                                            ' Type \'HELP\' to see '
                                            'all avaliable commands:  ')
-            print('\n')
+            pretty_print('\n')
 
             if user_command_input == 'account info':
                 standard_account_info()
@@ -1264,18 +1365,21 @@ def main():
                 full_account_info()
 
             elif user_command_input == 'find balance':
-                print('How many addresses should be checked?\n'
-                      'If I find a address with balance'
-                      ' and the following three addresses\n'
-                      'don\'t have any balance, I will stop'
-                      ' searching.\n')
+                pretty_print(
+                    'How many addresses should be checked?\n'
+                    'If I find a address with balance'
+                    ' and the following three addresses\n'
+                    'don\'t have any balance, I will stop'
+                    ' searching.\n',
+                    color='green'
+                )
                 prompt = 'So, what is the maximum number of' \
                          ' addresses I should check?'
                 number = numbers_user_input(prompt)
                 find_balance(number)
 
             elif user_command_input == 'generate new address':
-                print('Generating 1 address...')
+                pretty_print('Generating 1 address...', color='blue')
                 generate_addresses(1)
 
             elif user_command_input == 'send transfer':
@@ -1291,15 +1395,15 @@ def main():
                 set_settings()
 
             elif user_command_input == 'exit':
-                print('See you!\n\n\n')
+                pretty_print('See you!\n\n\n', color='green')
                 return
 
             elif user_command_input == 'log out':
-                print('Logging out...\n\n\n')
+                pretty_print('Logging out...\n\n\n', color='red')
                 logged_in = False
 
             elif user_command_input == 'HELP':
-                print('''Avaliable commands:
+                pretty_print('''Avaliable commands:
 
         'account info'
             Will show you each address containing balance, total balance and your deposit address.
@@ -1335,8 +1439,10 @@ def main():
                     ''')
 
             else:
-                print('Ups I didn\'t understand that command.'
-                      ' Please try again!')
-
+                pretty_print(
+                    'Ups I didn\'t understand that command.'
+                    ' Please try again!',
+                    color='red'
+                )
 
 main()

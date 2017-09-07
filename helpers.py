@@ -1,4 +1,5 @@
 import sys
+from pretty_print import colors, PrettyPrint
 
 _ver = sys.version_info
 
@@ -12,3 +13,11 @@ def fetch_user_input(text):
         return raw_input(text)
 
     return input(text)
+
+
+def pretty_print(text, *args, **kwargs):
+    if 'color' in kwargs:
+        # Might need to check if its a supported color
+        return PrettyPrint(text, *args, **dict(kwargs, color=colors[kwargs['color']]))
+
+    return PrettyPrint(text, *args, **kwargs)
