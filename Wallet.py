@@ -3,7 +3,7 @@ import hashlib
 import json
 import time
 import datetime
-from helpers import is_py2, fetch_user_input
+from helpers import is_py2, fetch_user_input, pretty_print
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
@@ -1224,8 +1224,10 @@ the users commands. All functions above will be called
 directly or indirectly through this function.
 '''
 
-
 def main():
+    # Setup pre-requisites
+    init_configs()
+
     ask_seed = True
     while ask_seed:
         global seed
@@ -1338,5 +1340,8 @@ def main():
                 print('Ups I didn\'t understand that command.'
                       ' Please try again!')
 
+
+def init_configs():
+    pretty_print('UMAIR')
 
 main()
