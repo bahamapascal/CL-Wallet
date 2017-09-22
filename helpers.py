@@ -1,5 +1,6 @@
 import sys
 from pretty_print import colors, PrettyPrint
+from keyboard_interceptor import KeyboardInterruptHandler
 
 _ver = sys.version_info
 
@@ -21,3 +22,20 @@ def pretty_print(text, *args, **kwargs):
         return PrettyPrint(text, *args, **dict(kwargs, color=colors[kwargs['color']]))
 
     return PrettyPrint(text, *args, **kwargs)
+
+
+def intercept_keyboard_interrupts(callback):
+    return KeyboardInterruptHandler(callback)
+
+
+def is_string(string):
+    return isinstance(string, basestring) if is_py2 else isinstance(string, str)
+
+
+def confirms(value):
+    """
+    :param value: string
+    :return boolean: 
+    """
+    as_lower = value.lower() if is_string(value) else str(value).lower()
+    return as_lower == 'y' or as_lower == 'yes'
