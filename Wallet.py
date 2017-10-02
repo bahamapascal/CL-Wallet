@@ -29,8 +29,7 @@ Returns a sha256 hash of seed + address
 
 def get_checksum(address):
     data = address + seed
-    s = hashlib.sha256(data)
-    return s.hexdigest()
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
 
 
 '''
@@ -546,7 +545,7 @@ def generate_addresses(count):
             start_index = 0
         else:
             start_index = max(index_list) + 1
-        generator = AddressGenerator(seed)
+        generator = AddressGenerator(seed.encode())
 
         '''
         This is the actual function to generate the address.
@@ -558,7 +557,8 @@ def generate_addresses(count):
             index = start_index + i
             address = addresses[i]
             balance = address_balance(address)
-            write_address_data(index, str(address), balance)
+            write_address_data(index, str(address), balance) if is_py2 else \
+                write_address_data(index, address, balance)
             i += 1
 
         update_fal_balance()
