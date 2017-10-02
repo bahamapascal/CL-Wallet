@@ -356,8 +356,7 @@ converts it to an address with checksum (90 Characters)
 def address_checksum(address):
     bytes_address = bytes(address)
     addy = Address(bytes_address)
-    address = str(addy.with_valid_checksum())
-    return address
+    return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
 
 
 '''
@@ -383,18 +382,19 @@ seed into the account file
 
 
 def write_address_data(index, address, balance):
-    address = address_checksum(address)
+    address = address_checksum(address) if is_py2 else address_checksum(address.encode())
+
     for p in address_data:
-        if p['address'] == address:
+        if p['address'] == address.decode():
             p['balance'] = balance
             with open(file_name, 'w') as account_data:
                 json.dump(raw_account_data, account_data)
             return
 
-    checksum = get_checksum(address)
+    checksum = get_checksum(address.decode())
     raw_account_data['account_data'][0]['address_data'].append({
         'index': index,
-        'address': address,
+        'address': address.decode(),
         'balance': balance,
         'checksum': checksum
     })
@@ -514,7 +514,7 @@ def update_addresses_balance(start_index=0):
         index = data['index']
         if start_index <= index:
             address = str(data['address'])
-            balance = address_balance(address)
+            balance = address_balance(address.encode())
             write_address_data(index, address, balance)
 
         if max_index < index:
@@ -545,7 +545,9 @@ def generate_addresses(count):
             start_index = 0
         else:
             start_index = max(index_list) + 1
-        generator = AddressGenerator(seed.encode())
+
+        as_encoded = seed if is_py2 else seed.encode('utf-8')
+        generator = AddressGenerator(as_encoded)
 
         '''
         This is the actual function to generate the address.
@@ -556,9 +558,10 @@ def generate_addresses(count):
         while i < count:
             index = start_index + i
             address = addresses[i]
-            balance = address_balance(address)
-            write_address_data(index, str(address), balance) if is_py2 else \
-                write_address_data(index, address, balance)
+
+            versionised_address = str(address) if is_py2 else bytes(address)
+            balance = address_balance(versionised_address) if is_py2 else address_balance(versionised_address)
+            write_address_data(index, versionised_address, balance) if is_py2 else write_address_data(index, versionised_address.decode(), balance)
             i += 1
 
         update_fal_balance()
