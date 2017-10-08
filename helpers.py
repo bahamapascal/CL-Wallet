@@ -37,6 +37,9 @@ def handle_replay(node, seed, command, transfers, **kwargs):
     bundle = None
     t_id = t_id.strip()
 
+    if not transfers:
+        return pretty_print('Looks like you do not have any account history.')
+    
     for transfer in transfers:
         if transfer['short_transaction_id'] == t_id:
             bundle = transfer['bundle']
