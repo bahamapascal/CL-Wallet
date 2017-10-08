@@ -3,7 +3,7 @@ import hashlib
 import json
 import time
 import datetime
-from helpers import is_py2, fetch_user_input, pretty_print
+from helpers import is_py2, fetch_user_input, pretty_print, handle_replay
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
@@ -1394,6 +1394,12 @@ def main():
             elif user_command_input == 'full account history':
                 get_transfers(full_history=True)
 
+            elif 'replay' in user_command_input:
+                handle_replay(iota_node, seed, user_command_input, [{
+                    "short_transaction_id": '0',
+                    "bundle": 'BVEHJXTRJA9WPXRYBJUG9LJCTPZMUKZJMFGVSAYHLFKKFHKAIUVIGSRQXJUZNRMZZEQCZC9RUYLDOKISA'
+                }])
+
             elif user_command_input == 'settings':
                 set_settings()
 
@@ -1429,7 +1435,13 @@ def main():
 
         'full account history'
             Shows all transfers, including old non confirmed transfers (from your saved account addreses)
-
+        
+        'replay bundle'
+            Re-attach transactions to a different part of the Tangle.
+            [Usage]: replay [short_transaction_id]
+            [Note]: You can look up the short_transaction_id from (account history) or (full account history) options.
+            [Example]: replay 36
+            
         'settings'
             Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)
 
