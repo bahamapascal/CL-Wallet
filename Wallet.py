@@ -1414,10 +1414,14 @@ def main():
                 get_transfers(full_history=True)
 
             elif 'replay' in user_command_input:
-                handle_replay(iota_node, seed, user_command_input, [{
-                    "short_transaction_id": '0',
-                    "bundle": 'BVEHJXTRJA9WPXRYBJUG9LJCTPZMUKZJMFGVSAYHLFKKFHKAIUVIGSRQXJUZNRMZZEQCZC9RUYLDOKISA'
-                }])
+                min_weight_magnitude = settings[0]['min_weight_magnitude']
+                handle_replay(
+                    iota_node,
+                    seed,
+                    user_command_input,
+                    transfers_data,
+                    min_weight_magnitude=min_weight_magnitude
+                )
 
             elif user_command_input == 'settings':
                 set_settings()

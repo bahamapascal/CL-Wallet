@@ -41,7 +41,9 @@ def handle_replay(node, seed, command, transfers, **kwargs):
         return pretty_print('Looks like you do not have any account history.')
     
     for transfer in transfers:
-        if transfer['short_transaction_id'] == t_id:
+        id_as_string = str(transfer['short_transaction_id'])
+
+        if id_as_string == t_id:
             bundle = transfer['bundle']
             break
 
@@ -55,5 +57,5 @@ def handle_replay(node, seed, command, transfers, **kwargs):
         node,
         seed,
         bundle,
-        replay_callback=lambda: pretty_print('Successfully replayed your specified bundle!', color='blue')
+        replay_callback=lambda message: pretty_print(message, color='blue')
     )

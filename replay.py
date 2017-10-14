@@ -24,11 +24,17 @@ class Replay:
 
     def replay(self, bundle):
         tail_transaction = self.fetch_tail_transaction(bundle)
-        self.api.replay_bundle(
-            transaction=tail_transaction,
-            depth=self.depth,
-            min_weight_magnitude=self.min_weight_magnitude
-        )
 
-        if callable(self.replay_callback):
-            self.replay_callback()
+        try:
+            self.api.replay_bundle(
+                transaction=tail_transaction,
+                depth=self.depth,
+                min_weight_magnitude=self.min_weight_magnitude
+            )
+            if callable(self.replay_callback):
+                self.replay_callback('Successfully replayed your specified bundle!')
+        except:
+            if callable(self.replay_callback):
+                self.replay_callback('Something went wrong while replaying your bundle! Please try again.')
+
+
