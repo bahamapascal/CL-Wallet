@@ -440,7 +440,8 @@ def write_transfers_data(
         address,
         message,
         value,
-        bundle
+        bundle,
+        short_transaction_id
 ):
     for p in transfers_data:
         if p['transaction_hash'] == transaction_hash:
@@ -460,7 +461,8 @@ def write_transfers_data(
         'address': address,
         'message': message,
         'value': value,
-        'bundle': bundle
+        'bundle': bundle,
+        'short_transaction_id': short_transaction_id
     })
 
     with open(file_name, 'w') as account_data:
@@ -1117,6 +1119,7 @@ def print_transaction_history(full_history=False):
         bundle = transaction['bundle']
         tag = transaction['tag']
         value = transaction['value']
+        short_transaction_id = transaction['short_transaction_id']
 
         if full_history:
             data = {'txn_time': str(txn_time),
@@ -1125,7 +1128,9 @@ def print_transaction_history(full_history=False):
                     'value': str(value),
                     'tag': str(tag),
                     'bundle': str(bundle),
-                    'is_confirmed': str(is_confirmed)}
+                    'is_confirmed': str(is_confirmed),
+                    'short_transaction_id': str(short_transaction_id)
+                    }
 
             all_transactions.append(data)
 
@@ -1136,7 +1141,9 @@ def print_transaction_history(full_history=False):
                     'value': str(value),
                     'tag': str(tag),
                     'bundle': str(bundle),
-                    'is_confirmed': str(is_confirmed)}
+                    'is_confirmed': str(is_confirmed),
+                    'short_transaction_id': str(short_transaction_id)
+                    }
 
             new_transactions.append(data)
 
@@ -1146,7 +1153,9 @@ def print_transaction_history(full_history=False):
                     'address': str(address),
                     'value': str(value),
                     'bundle': str(bundle),
-                    'tag': str(tag)}
+                    'tag': str(tag),
+                    'short_transaction_id': str(short_transaction_id)
+                    }
 
             old_confirmed_transactions.append(data)
 
@@ -1169,6 +1178,8 @@ def print_transaction_history(full_history=False):
                         bundle = data['bundle']
                         tag = data['tag']
                         is_confirmed = data['is_confirmed']
+                        short_transaction_id = data['short_transaction_id']
+
                         pretty_print(
                             '' + txn_time + '\n' +
                             '    Txn Hash: '
@@ -1176,7 +1187,8 @@ def print_transaction_history(full_history=False):
                             str(convert_units(value)) + '\n' +
                             '    Bundle: ' + bundle + '\n' +
                             '    Tag: ' + tag + '\n' +
-                            '    Confirmed: ' + is_confirmed + '\n'
+                            '    Confirmed: ' + is_confirmed + '\n' +
+                            '    Short Transaction ID: ' + short_transaction_id + '\n'
                         )
 
     if len(old_confirmed_transactions) > 0 and not full_history:
@@ -1197,12 +1209,14 @@ def print_transaction_history(full_history=False):
                         value = data['value']
                         bundle = data['bundle']
                         tag = data['tag']
+                        short_transaction_id = data['short_transaction_id']
                         pretty_print(
                             ' ' + txn_time + '\n' +
                             '    Txn Hash: ' + transaction_hash +
                             '  ' + str(convert_units(value)) + '\n' +
                             '    Bundle: ' + bundle + '\n' +
-                            '    Tag: ' + tag + '\n'
+                            '    Tag: ' + tag + '\n' +
+                            '    Short Transaction ID: ' + short_transaction_id + '\n'
                         )
 
     if len(new_transactions) == 0 and\
@@ -1225,6 +1239,7 @@ def print_transaction_history(full_history=False):
             bundle = data['bundle']
             tag = data['tag']
             is_confirmed = data['is_confirmed']
+            short_transaction_id = data['short_transaction_id']
             pretty_print(
                 ' ' + txn_time + '\n' +
                 ' To/From: ' + address + '\n'
@@ -1233,7 +1248,8 @@ def print_transaction_history(full_history=False):
                 str(convert_units(value)) + '\n' +
                 '          Bundle: ' + bundle + '\n' +
                 '          Tag: ' + tag + '\n' +
-                '          Confirmed: ' + is_confirmed + '\n'
+                '          Confirmed: ' + is_confirmed + '\n' +
+                '          Short Transaction  ID: ' + short_transaction_id + '\n'
             )
 
 
@@ -1279,12 +1295,13 @@ def get_transfers(full_history):
             color='blue'
         )
 
-        for txn_hash in new_txn_hashes:
+        for idx, txn_hash in enumerate(new_txn_hashes):
             txn_hash_as_bytes = bytes(txn_hash)
 
             '''
             Needs to be integrated into new transactions as well
             '''
+
 
             li_result = api.get_latest_inclusion([txn_hash_as_bytes])
             is_confirmed = li_result['states'][txn_hash]
@@ -1295,6 +1312,7 @@ def get_transfers(full_history):
             timestamp = str(txn.timestamp)
             tag = str(txn.tag)
             address = str(txn.address)
+            short_transaction_id = idx
 
             '''
             Placeholder until message decoding is added
@@ -1311,7 +1329,8 @@ def get_transfers(full_history):
                 address,
                 message,
                 value,
-                bundle
+                bundle,
+                short_transaction_id
             )
 
     if full_history:
