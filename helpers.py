@@ -1,6 +1,7 @@
 import sys
 from pretty_print import colors, PrettyPrint
 from replay import Replay
+from keyboard_interceptor import KeyboardInterruptHandler
 
 _ver = sys.version_info
 
@@ -59,3 +60,20 @@ def handle_replay(node, seed, command, transfers, **kwargs):
         bundle,
         replay_callback=lambda message: pretty_print(message, color='blue')
     )
+
+
+def intercept_keyboard_interrupts(callback):
+    return KeyboardInterruptHandler(callback)
+
+
+def is_string(string):
+    return isinstance(string, basestring) if is_py2 else isinstance(string, str)
+
+
+def confirms(value):
+    """
+    :param value: string
+    :return boolean: 
+    """
+    as_lower = value.lower() if is_string(value) else str(value).lower()
+    return as_lower == 'y' or as_lower == 'yes'

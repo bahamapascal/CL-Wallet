@@ -3,7 +3,7 @@ import hashlib
 import json
 import time
 import datetime
-from helpers import is_py2, fetch_user_input, pretty_print, handle_replay
+from helpers import is_py2, fetch_user_input, pretty_print, intercept_keyboard_interrupts, handle_replay
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
@@ -1348,7 +1348,12 @@ the users commands. All functions above will be called
 directly or indirectly through this function.
 '''
 
+
 def main():
+    # intercept keyboard interrupts for forcefully killing wallet
+    # Would help us gracefully exiting the wallet upon user confirmation
+    intercept_keyboard_interrupts(main)
+
     ask_seed = True
     while ask_seed:
         global seed
