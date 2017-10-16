@@ -205,7 +205,7 @@ def read_account_data():
             data['account_data'].append({
                 'settings': [{
                     'host': 'http://bahamapascal-tn1.ddns.net:14200',
-                    'min_weight_magnitude': 13,
+                    'min_weight_magnitude': 14,
                     'units': 'i'
                 }],
                 'address_data': [],
@@ -1043,7 +1043,7 @@ def send_transfer(prepared_transferes):
         depth=7,
         transfers=prepared_transferes,
         change_address=change_addy,
-        min_weight_magnitude=18
+        min_weight_magnitude=settings[0]['min_weight_magnitude']
         )
     pretty_print('Transaction completed!', color='green')
 
