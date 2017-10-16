@@ -58,7 +58,8 @@ def handle_replay(node, seed, command, transfers, **kwargs):
         node,
         seed,
         bundle,
-        replay_callback=lambda message: pretty_print(message, color='blue')
+        replay_callback=lambda message: pretty_print(message, color='blue'),
+        **kwargs
     )
 
 
