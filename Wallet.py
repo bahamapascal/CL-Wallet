@@ -1266,6 +1266,7 @@ def get_transfers(full_history):
     saved_txn_hashes = []
     new_txn_hashes = []
     i = 0
+    short_t_id_start_idx = 0
 
     while i < address_count:
         address = address_data[i]['address']
@@ -1279,6 +1280,13 @@ def get_transfers(full_history):
         i += 1
 
     for txn_hash in transfers_data:
+        """
+        Check if there is already a short transaction id assigned previously.
+        If there is we'll assign the next id to start from
+        """
+        if txn_hash['short_transaction_id'] >= short_t_id_start_idx:
+            short_t_id_start_idx = txn_hash['short_transaction_id'] + 1
+
         txn_hash = str(txn_hash['transaction_hash'])
         saved_txn_hashes.append(txn_hash)
 
@@ -1295,13 +1303,12 @@ def get_transfers(full_history):
             color='blue'
         )
 
-        for idx, txn_hash in enumerate(new_txn_hashes):
+        for txn_hash in new_txn_hashes:
             txn_hash_as_bytes = bytes(txn_hash)
 
             '''
             Needs to be integrated into new transactions as well
             '''
-
 
             li_result = api.get_latest_inclusion([txn_hash_as_bytes])
             is_confirmed = li_result['states'][txn_hash]
@@ -1312,7 +1319,9 @@ def get_transfers(full_history):
             timestamp = str(txn.timestamp)
             tag = str(txn.tag)
             address = str(txn.address)
-            short_transaction_id = idx
+            short_transaction_id = short_t_id_start_idx
+
+            short_t_id_start_idx += 1  # increment short transaction id
 
             '''
             Placeholder until message decoding is added
