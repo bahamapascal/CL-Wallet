@@ -954,10 +954,10 @@ def prepare_transferes():
                     color='red'
                 )
 
-        recipient_address = bytes(recipient_address)
+        recipient_address = bytes(recipient_address) if is_py2 else bytes(recipient_address.encode())
         user_message = fetch_user_input('Please enter a message: ')
         user_tag = fetch_user_input('Please enter a tag: ')
-        user_tag = bytes(user_tag)
+        user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
         transfer_value = transfer_value_user_input()
         txn = \
             ProposedTransaction(
@@ -966,7 +966,7 @@ def prepare_transferes():
                 ),
 
                 message=TryteString.from_string(user_message),
-                tag=Tag(user_tag),
+                tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
                 value=transfer_value,
             )
         prepared_transferes.append(txn)
