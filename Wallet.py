@@ -954,10 +954,10 @@ def prepare_transferes():
                     color='red'
                 )
 
-        recipient_address = bytes(recipient_address)
+        recipient_address = bytes(recipient_address) if is_py2 else bytes(recipient_address.encode())
         user_message = fetch_user_input('Please enter a message: ')
         user_tag = fetch_user_input('Please enter a tag: ')
-        user_tag = bytes(user_tag)
+        user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
         transfer_value = transfer_value_user_input()
         txn = \
             ProposedTransaction(
@@ -966,7 +966,7 @@ def prepare_transferes():
                 ),
 
                 message=TryteString.from_string(user_message),
-                tag=Tag(user_tag),
+                tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
                 value=transfer_value,
             )
         prepared_transferes.append(txn)
@@ -1089,7 +1089,7 @@ def print_transaction_history(full_history=False):
             address = address_checksum(str(addy['address']))
             addresses_with_new_transactions.append(address)
         elif is_confirmed == 'True':
-            address = address_checksum(str(addy['address']))
+            address = address_checksum(str(addy['address'])) if is_py2 else address_checksum((addy['address'].encode()))
             addresses_with_confirmed_transactions.append(address)
 
     addresses_with_confirmed_transactions = set(
@@ -1115,7 +1115,8 @@ def print_transaction_history(full_history=False):
         ).strftime('%Y-%m-%d %H:%M:%S')
         is_confirmed = str(transaction['is_confirmed'])
         transaction_hash = transaction['transaction_hash']
-        address = address_checksum(str(transaction['address']))
+        address = address_checksum(str(transaction['address'])) if is_py2\
+            else address_checksum(transaction['address'].encode())
         bundle = transaction['bundle']
         tag = transaction['tag']
         value = transaction['value']
@@ -1198,7 +1199,8 @@ def print_transaction_history(full_history=False):
             '--------------------------------------------------------'
         )
         for addy in addresses_with_confirmed_transactions:
-            addy = address_checksum(str(addy))
+            addy = address_checksum(str(addy)) if is_py2 else address_checksum(addy
+                                                                               )
             pretty_print('\nTransactions to/from: ' + str(addy) + '\n')
 
             for data in old_confirmed_transactions:
@@ -1270,7 +1272,7 @@ def get_transfers(full_history):
 
     while i < address_count:
         address = address_data[i]['address']
-        address_as_bytes = [bytes(address)]
+        address_as_bytes = [bytes(address)] if is_py2 else [bytes(address.encode())]
         raw_transfers = api.find_transactions(addresses=address_as_bytes)
         transactions_to_check = raw_transfers['hashes']
 
@@ -1304,7 +1306,7 @@ def get_transfers(full_history):
         )
 
         for txn_hash in new_txn_hashes:
-            txn_hash_as_bytes = bytes(txn_hash)
+            txn_hash_as_bytes = bytes(txn_hash) if is_py2 else bytes(txn_hash.encode())
 
             '''
             Needs to be integrated into new transactions as well
