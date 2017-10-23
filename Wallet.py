@@ -942,7 +942,7 @@ def prepare_transferes():
                         'Addresses with checksum are a lot safer to use.'
                     )
             elif len(recipient_address) == 90:
-                is_valid = is_valid_address(recipient_address)
+                is_valid = is_valid_address(recipient_address )if is_py2 else is_valid_address(recipient_address.encode())
                 if is_valid:
                     get_recipient_address = False
                 else:
