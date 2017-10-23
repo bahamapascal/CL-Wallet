@@ -3,7 +3,7 @@ import hashlib
 import json
 import time
 import datetime
-from helpers import is_py2, fetch_user_input, pretty_print, intercept_keyboard_interrupts, handle_replay
+from helpers import is_py2, fetch_user_input, pretty_print, intercept_keyboard_interrupts, handle_replay, get_decoded_string
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
@@ -1169,10 +1169,12 @@ def print_transaction_history(full_history=False):
             )
         for addy in addresses_with_new_transactions:
             addy = address_checksum(str(addy))
-            pretty_print('\nTransactions to/from: ' + str(addy) + '\n')
+            pretty_print('\nTransactions to/from: ' + get_decoded_string(addy) + '\n')
             for data in new_transactions:
                     address = data['address']
-                    if address == addy:
+                    condition = address == addy if is_py2 else address == str(addy)
+
+                    if condition:
                         txn_time = data['txn_time']
                         transaction_hash = data['transaction_hash']
                         value = data['value']
@@ -1199,13 +1201,15 @@ def print_transaction_history(full_history=False):
             '--------------------------------------------------------'
         )
         for addy in addresses_with_confirmed_transactions:
-            addy = address_checksum(str(addy)) if is_py2 else address_checksum(addy
-                                                                               )
-            pretty_print('\nTransactions to/from: ' + str(addy) + '\n')
+            addy = address_checksum(str(addy)) if is_py2 else address_checksum(addy)
+
+            pretty_print('\nTransactions to/from: ' + get_decoded_string(addy) + '\n')
 
             for data in old_confirmed_transactions:
                     address = data['address']
-                    if address == addy:
+                    condition = address == addy if is_py2 else address == str(addy)
+
+                    if condition:
                         txn_time = data['txn_time']
                         transaction_hash = data['transaction_hash']
                         value = data['value']
@@ -1251,7 +1255,7 @@ def print_transaction_history(full_history=False):
                 '          Bundle: ' + bundle + '\n' +
                 '          Tag: ' + tag + '\n' +
                 '          Confirmed: ' + is_confirmed + '\n' +
-                '          Short Transaction  ID: ' + short_transaction_id + '\n'
+                '          Short Transaction ID: ' + short_transaction_id + '\n'
             )
 
 
