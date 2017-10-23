@@ -78,3 +78,7 @@ def confirms(value):
     """
     as_lower = value.lower() if is_string(value) else str(value).lower()
     return as_lower == 'y' or as_lower == 'yes'
+
+
+def get_decoded_string(string):
+    return str(string) if is_py2 else str(string.decode())
