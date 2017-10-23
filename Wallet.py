@@ -1,4 +1,3 @@
-import sys
 import getpass
 import hashlib
 import json
