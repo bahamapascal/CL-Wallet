@@ -1037,7 +1037,8 @@ and sends it to the IOTA node for attaching itto the tangle
 
 def send_transfer(prepared_transferes):
     pretty_print('Sending transfer, this can take a while...')
-    change_addy = bytes(get_deposit_address())
+    change_addy = bytes(get_deposit_address()) if is_py2 else get_deposit_address().encode()
+
     api = Iota(iota_node, seed)
     api.send_transfer(
         depth=7,
