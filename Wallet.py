@@ -1016,10 +1016,10 @@ def review_transfers(prepared_transferes):
                 'This can take a while...'
             )
             ask_user = False
-            try:
-                send_transfer(prepared_transferes)
-            except:
-                pretty_print('A error occurred :(', color='red')
+            """try:"""
+            send_transfer(prepared_transferes)
+            """except:
+                pretty_print('A error occurred :(', color='red')"""
 
         elif user_input == 'CANCEL':
             pretty_print('\n\nTransfer(s) canceled!', color='red')
@@ -1035,12 +1035,27 @@ and sends it to the IOTA node for attaching itto the tangle
 '''
 
 
+def get_inputs():
+    inputs = []
+    for p in address_data:
+        balance = p['balance']
+        if balance > 0:
+            address = p['address']
+            address = bytes(address) if is_py2 else address.encode()
+            index = int(p['index'])
+            input = Address(address,key_index=index)
+            inputs.append(input)
+    print(str(inputs))
+    return inputs
+
+
 def send_transfer(prepared_transferes):
     pretty_print('Sending transfer, this can take a while...')
     change_addy = bytes(get_deposit_address()) if is_py2 else get_deposit_address().encode()
 
     api = Iota(iota_node, seed)
     api.send_transfer(
+        inputs=get_inputs(),
         depth=7,
         transfers=prepared_transferes,
         change_address=change_addy,
