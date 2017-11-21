@@ -497,7 +497,7 @@ and gets the current confirmed balance
 
 def address_balance(address):
     api = Iota(iota_node)
-    gna_result = api.get_balances([address])
+    gna_result = api.get_balances([Address(address).address])
     balance = gna_result['balances']
     return balance[0]
 
@@ -516,8 +516,8 @@ def update_addresses_balance(start_index=0):
         index = data['index']
         if start_index <= index:
             address = str(data['address'])
-            balance = address_balance(address.encode())
-            write_address_data(index, address, balance)
+            balance = address_balance(address)
+            # write_address_data(index, address, balance)
 
         if max_index < index:
             max_index = index
@@ -1338,8 +1338,8 @@ def get_transfers(full_history):
 
     while i < address_count:
         address = address_data[i]['address']
-        address_as_bytes = [bytes(address)] if is_py2 else [bytes(address.encode())]
-        raw_transfers = api.find_transactions(addresses=address_as_bytes)
+        address_as_versionsed = str(address) if is_py2 else bytes(address.encode())
+        raw_transfers = api.find_transactions(addresses=[Address(address_as_versionsed).address])
         transactions_to_check = raw_transfers['hashes']
 
         for txn_hash in transactions_to_check:
