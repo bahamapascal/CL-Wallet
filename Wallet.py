@@ -517,7 +517,7 @@ def update_addresses_balance(start_index=0):
         if start_index <= index:
             address = str(data['address'])
             balance = address_balance(address)
-            # write_address_data(index, address, balance)
+            write_address_data(index, address, balance)
 
         if max_index < index:
             max_index = index
