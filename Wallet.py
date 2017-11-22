@@ -354,7 +354,8 @@ converts it to an address with checksum (90 Characters)
 
 
 def address_checksum(address):
-    bytes_address = bytes(address)
+    address = get_decoded_string(address)
+    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
     addy = Address(bytes_address)
     return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
 
