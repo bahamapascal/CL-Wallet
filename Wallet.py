@@ -354,7 +354,8 @@ converts it to an address with checksum (90 Characters)
 
 
 def address_checksum(address):
-    bytes_address = bytes(address)
+    address = get_decoded_string(address)
+    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
     addy = Address(bytes_address)
     return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
 
@@ -497,7 +498,7 @@ and gets the current confirmed balance
 
 def address_balance(address):
     api = Iota(iota_node)
-    gna_result = api.get_balances([address])
+    gna_result = api.get_balances([Address(address).address])
     balance = gna_result['balances']
     return balance[0]
 
@@ -516,7 +517,7 @@ def update_addresses_balance(start_index=0):
         index = data['index']
         if start_index <= index:
             address = str(data['address'])
-            balance = address_balance(address.encode())
+            balance = address_balance(address)
             write_address_data(index, address, balance)
 
         if max_index < index:
@@ -796,7 +797,7 @@ Will ask the user to enter the amount and Units (Iota, MegaIota, GigaIota,etc.)
 '''
 
 
-def transfer_value_user_input():
+def transfer_value_user_input(prepared_transferes):
     pretty_print(
         '\n\nEnter a number and the the unit size.\n'
         'Avalaible units are \'i\'(Iota), '
@@ -804,6 +805,17 @@ def transfer_value_user_input():
         '\'gi\'(GigaIota) and \'ti\'(TerraIota)\n'
         'Example: If you enter \'12.3 gi\', I will send 12.3 GigaIota\n'
     )
+    update_addresses_balance(fal_balance[0]['f_index'])
+    update_fal_balance()
+    total_balance = 0
+    for p in address_data:
+        balance = int(p['balance'])
+        total_balance += balance
+    if len(prepared_transferes) > 0:
+        for txn in prepared_transferes:
+            value = int(txn.value)
+            total_balance -= value
+
     ask_user = True
     while ask_user:
         user_input = fetch_user_input('Please enter the amount to send: ')
@@ -841,6 +853,13 @@ def transfer_value_user_input():
                             'Can only send whole Iotas...\n ',
                             color='red'
                         )
+                    elif value > total_balance:
+                        avaliable_balance = convert_units(total_balance)
+                        pretty_print(
+                            'You do not have sufficient balance!\n'
+                            'The avaliable Balance is: ' + avaliable_balance,
+                            color='red'
+                        )
                     else:
                         return int(value)
 
@@ -851,6 +870,13 @@ def transfer_value_user_input():
                             'You entered a amount greater '
                             'then 0 but smaller then 1 Iota!\n'
                             'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
+                    elif value > total_balance:
+                        avaliable_balance = convert_units(total_balance)
+                        pretty_print(
+                            'You do not have sufficient balance!\n'
+                            'The avaliable Balance is: ' + avaliable_balance,
                             color='red'
                         )
                     else:
@@ -865,6 +891,13 @@ def transfer_value_user_input():
                             'Can only send whole Iotas...\n ',
                             color='red'
                         )
+                    elif value > total_balance:
+                        avaliable_balance = convert_units(total_balance)
+                        pretty_print(
+                            'You do not have sufficient balance!\n'
+                            'The avaliable Balance is: ' + avaliable_balance,
+                            color='red'
+                        )
                     else:
                         return int(value)
 
@@ -877,6 +910,13 @@ def transfer_value_user_input():
                             'Can only send whole Iotas...\n ',
                             color='red'
                         )
+                    elif value > total_balance:
+                        avaliable_balance = convert_units(total_balance)
+                        pretty_print(
+                            'You do not have sufficient balance!\n'
+                            'The avaliable Balance is: ' + avaliable_balance,
+                            color='red'
+                        )
                     else:
                         return int(value)
 
@@ -887,6 +927,13 @@ def transfer_value_user_input():
                             'You entered a amount greater then 0 '
                             'but smaller then 1 Iota!\n'
                             'Can only send whole Iotas...\n ',
+                            color='red'
+                        )
+                    elif value > total_balance:
+                        avaliable_balance = convert_units(total_balance)
+                        pretty_print(
+                            'You do not have sufficient balance!\n'
+                            'The avaliable Balance is: ' + avaliable_balance,
                             color='red'
                         )
                     else:
@@ -958,7 +1005,7 @@ def prepare_transferes():
         user_message = fetch_user_input('Please enter a message: ')
         user_tag = fetch_user_input('Please enter a tag: ')
         user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
-        transfer_value = transfer_value_user_input()
+        transfer_value = transfer_value_user_input(prepared_transferes)
         txn = \
             ProposedTransaction(
                 address=Address(
@@ -1035,12 +1082,27 @@ and sends it to the IOTA node for attaching itto the tangle
 '''
 
 
+def get_inputs():
+    inputs = []
+    for p in address_data:
+        balance = p['balance']
+        if balance > 0:
+            address = p['address']
+            address = bytes(address) if is_py2 else address.encode()
+            index = int(p['index'])
+            input = Address(address,key_index=index,security_level=2)
+            inputs.append(input)
+
+    return inputs
+
+
 def send_transfer(prepared_transferes):
     pretty_print('Sending transfer, this can take a while...')
     change_addy = bytes(get_deposit_address()) if is_py2 else get_deposit_address().encode()
 
     api = Iota(iota_node, seed)
     api.send_transfer(
+        inputs=get_inputs(),
         depth=7,
         transfers=prepared_transferes,
         change_address=change_addy,
@@ -1169,7 +1231,7 @@ def print_transaction_history(full_history=False):
             '-------------'
             )
         for addy in addresses_with_new_transactions:
-            addy = address_checksum(str(addy))
+            addy = address_checksum(str(addy) if is_py2 else bytes(addy))
             pretty_print('\nTransactions to/from: ' + get_decoded_string(addy) + '\n')
             for data in new_transactions:
                     address = data['address']
@@ -1277,8 +1339,8 @@ def get_transfers(full_history):
 
     while i < address_count:
         address = address_data[i]['address']
-        address_as_bytes = [bytes(address)] if is_py2 else [bytes(address.encode())]
-        raw_transfers = api.find_transactions(addresses=address_as_bytes)
+        address_as_versionsed = str(address) if is_py2 else bytes(address.encode())
+        raw_transfers = api.find_transactions(addresses=[Address(address_as_versionsed).address])
         transactions_to_check = raw_transfers['hashes']
 
         for txn_hash in transactions_to_check:
