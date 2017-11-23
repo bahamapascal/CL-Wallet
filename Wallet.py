@@ -1090,7 +1090,7 @@ def get_inputs():
             address = p['address']
             address = bytes(address) if is_py2 else address.encode()
             index = int(p['index'])
-            input = Address(address,key_index=index,security_level=1)
+            input = Address(address,key_index=index,security_level=2)
             inputs.append(input)
 
     return inputs
@@ -1231,7 +1231,7 @@ def print_transaction_history(full_history=False):
             '-------------'
             )
         for addy in addresses_with_new_transactions:
-            addy = address_checksum(str(addy))
+            addy = address_checksum(str(addy) if is_py2 else bytes(addy))
             pretty_print('\nTransactions to/from: ' + get_decoded_string(addy) + '\n')
             for data in new_transactions:
                     address = data['address']

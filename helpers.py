@@ -81,4 +81,10 @@ def confirms(value):
 
 
 def get_decoded_string(string):
-    return str(string) if is_py2 else str(string.decode())
+    if is_py2:
+        return str(string)
+    else:
+        if hasattr(string, 'decode'):
+            return string.decode()
+
+        return string
