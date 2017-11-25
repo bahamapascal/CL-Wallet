@@ -8,7 +8,8 @@ from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
 from iota.crypto.addresses import AddressGenerator
-
+from account import Account
+import config
 
 pretty_print('\nStarting wallet...\n\n\n\n')
 
@@ -1427,143 +1428,155 @@ directly or indirectly through this function.
 '''
 
 
-def main():
+def main(data):
     # intercept keyboard interrupts for forcefully killing wallet
     # Would help us gracefully exiting the wallet upon user confirmation
     intercept_keyboard_interrupts(main)
 
-    ask_seed = True
-    while ask_seed:
-        global seed
-        global file_name
-        seed = log_in()
-        file_name = create_file_name()
+    print data.settings
+    print data.file_name
+    print data.seed
+    global raw_account_data
+    global settings
+    global address_data
+    global fal_balance
+    global transfers_data
 
-        global raw_account_data
-        global settings
-        global address_data
-        global fal_balance
-        global transfers_data
+    raw_account_data = read_account_data()
+    settings = raw_account_data['account_data'][0]['settings']
+    address_data = raw_account_data['account_data'][0]['address_data']
+    fal_balance = raw_account_data['account_data'][0]['fal_balance']
+    transfers_data = raw_account_data['account_data'][0]['transfers_data']
 
-        raw_account_data = read_account_data()
-        settings = raw_account_data['account_data'][0]['settings']
-        address_data = raw_account_data['account_data'][0]['address_data']
-        fal_balance = raw_account_data['account_data'][0]['fal_balance']
-        transfers_data = raw_account_data['account_data'][0]['transfers_data']
+    global iota_node
+    iota_node = settings[0]['host']
 
-        global iota_node
-        iota_node = settings[0]['host']
+    logged_in = True
 
-        logged_in = True
+    while logged_in:
 
-        while logged_in:
+        user_command_input = fetch_user_input('\n \nPlease enter a command.'
+                                       ' Type \'HELP\' to see '
+                                       'all avaliable commands:  ')
+        pretty_print('\n')
 
-            user_command_input = fetch_user_input('\n \nPlease enter a command.'
-                                           ' Type \'HELP\' to see '
-                                           'all avaliable commands:  ')
-            pretty_print('\n')
+        if user_command_input == 'account info':
+            standard_account_info()
 
-            if user_command_input == 'account info':
-                standard_account_info()
+        elif user_command_input == 'full account info':
+            full_account_info()
 
-            elif user_command_input == 'full account info':
-                full_account_info()
+        elif user_command_input == 'find balance':
+            pretty_print(
+                'How many addresses should be checked?\n'
+                'If I find a address with balance'
+                ' and the following three addresses\n'
+                'don\'t have any balance, I will stop'
+                ' searching.\n',
+                color='green'
+            )
+            prompt = 'So, what is the maximum number of' \
+                     ' addresses I should check?'
+            number = numbers_user_input(prompt)
+            find_balance(number)
 
-            elif user_command_input == 'find balance':
-                pretty_print(
-                    'How many addresses should be checked?\n'
-                    'If I find a address with balance'
-                    ' and the following three addresses\n'
-                    'don\'t have any balance, I will stop'
-                    ' searching.\n',
-                    color='green'
-                )
-                prompt = 'So, what is the maximum number of' \
-                         ' addresses I should check?'
-                number = numbers_user_input(prompt)
-                find_balance(number)
+        elif user_command_input == 'generate new address':
+            pretty_print('Generating 1 address...', color='blue')
+            generate_addresses(1)
 
-            elif user_command_input == 'generate new address':
-                pretty_print('Generating 1 address...', color='blue')
-                generate_addresses(1)
+        elif user_command_input == 'send transfer':
+            prepare_transferes()
 
-            elif user_command_input == 'send transfer':
-                prepare_transferes()
+        elif user_command_input == 'account history':
+            get_transfers(full_history=False)
 
-            elif user_command_input == 'account history':
-                get_transfers(full_history=False)
+        elif user_command_input == 'full account history':
+            get_transfers(full_history=True)
 
-            elif user_command_input == 'full account history':
-                get_transfers(full_history=True)
+        elif 'replay' in user_command_input:
+            min_weight_magnitude = settings[0]['min_weight_magnitude']
+            handle_replay(
+                iota_node,
+                seed,
+                user_command_input,
+                transfers_data,
+                min_weight_magnitude=min_weight_magnitude
+            )
 
-            elif 'replay' in user_command_input:
-                min_weight_magnitude = settings[0]['min_weight_magnitude']
-                handle_replay(
-                    iota_node,
-                    seed,
-                    user_command_input,
-                    transfers_data,
-                    min_weight_magnitude=min_weight_magnitude
-                )
+        elif user_command_input == 'settings':
+            set_settings()
 
-            elif user_command_input == 'settings':
-                set_settings()
+        elif user_command_input == 'exit':
+            pretty_print('See you!\n\n\n', color='green')
+            return
 
-            elif user_command_input == 'exit':
-                pretty_print('See you!\n\n\n', color='green')
-                return
+        elif user_command_input == 'log out':
+            pretty_print('Logging out...\n\n\n', color='red')
+            logged_in = False
 
-            elif user_command_input == 'log out':
-                pretty_print('Logging out...\n\n\n', color='red')
-                logged_in = False
+        elif user_command_input == 'HELP':
+            pretty_print('''Avaliable commands:
 
-            elif user_command_input == 'HELP':
-                pretty_print('''Avaliable commands:
+    'account info'
+        Will show you each address containing balance, total balance and your deposit address.
 
-        'account info'
-            Will show you each address containing balance, total balance and your deposit address.
+    'full account info'
+        Will show you all saved addresses and there corespoding balance.
 
-        'full account info'
-            Will show you all saved addresses and there corespoding balance.
+    'find balance'
+        Searches for the first address with balance within a user defined range(e.g. first 100 addresses)
 
-        'find balance'
-            Searches for the first address with balance within a user defined range(e.g. first 100 addresses)
+    'generate new address'
+        Generates one new addresses!
 
-        'generate new address'
-            Generates one new addresses!
+    'send transfer'
+        Send one or more transfers
 
-        'send transfer'
-            Send one or more transfers
-
-        'account history'
-            Shows all confirmed transfers and all new transfers (from your saved account addreses)
+    'account history'
+        Shows all confirmed transfers and all new transfers (from your saved account addreses)
 
 
-        'full account history'
-            Shows all transfers, including old non confirmed transfers (from your saved account addreses)
+    'full account history'
+        Shows all transfers, including old non confirmed transfers (from your saved account addreses)
+    
+    'replay bundle'
+        Re-attach transactions to a different part of the Tangle.
+        [Usage]: replay [short_transaction_id]
+        [Note]: You can look up the short_transaction_id from (account history) or (full account history) options.
+        [Example]: replay 36
         
-        'replay bundle'
-            Re-attach transactions to a different part of the Tangle.
-            [Usage]: replay [short_transaction_id]
-            [Note]: You can look up the short_transaction_id from (account history) or (full account history) options.
-            [Example]: replay 36
-            
-        'settings'
-            Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)
+    'settings'
+        Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)
 
-        'log out'
-            Log out of your account and login with a different seed
+    'log out'
+        Log out of your account and login with a different seed
 
-        'exit'
-            Exit the wallet.
+    'exit'
+        Exit the wallet.
 
-                    ''')
+                ''')
 
-            else:
-                pretty_print(
-                    'Ups I didn\'t understand that command.'
-                    ' Please try again!',
-                    color='red'
-                )
+        else:
+            pretty_print(
+                'Ups I didn\'t understand that command.'
+                ' Please try again!',
+                color='red'
+            )
 
-main()
+
+def init():
+    # Get rid of globals once account is completed.
+    global seed
+    global file_name
+    seed = log_in()
+    file_name = create_file_name()
+
+    initial_settings = config.settings
+    data = Account(seed, file_name, initial_settings)
+
+    execute = 1
+
+    while execute:
+        return main(data)
+
+init()
