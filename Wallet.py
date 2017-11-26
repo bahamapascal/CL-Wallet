@@ -193,9 +193,8 @@ In case the file doesn't exist it will create a new account file.
 '''
 
 
-def read_account_data():
+def read_account_data(account):
     try:
-
         with open(file_name, 'r') as account_data:
             data = json.load(account_data)
             return data
@@ -204,11 +203,7 @@ def read_account_data():
             data = {}
             data['account_data'] = []
             data['account_data'].append({
-                'settings': [{
-                    'host': 'http://bahamapascal-tn1.ddns.net:14200',
-                    'min_weight_magnitude': 14,
-                    'units': 'i'
-                }],
+                'settings': [account.settings],
                 'address_data': [],
                 'fal_balance': [{'f_index': 0, 'l_index': 0}],
                 'transfers_data': []
@@ -1433,23 +1428,20 @@ def main(data):
     # Would help us gracefully exiting the wallet upon user confirmation
     intercept_keyboard_interrupts(main)
 
-    print data.settings
-    print data.file_name
-    print data.seed
-    global raw_account_data
-    global settings
-    global address_data
-    global fal_balance
-    global transfers_data
-
-    raw_account_data = read_account_data()
-    settings = raw_account_data['account_data'][0]['settings']
-    address_data = raw_account_data['account_data'][0]['address_data']
-    fal_balance = raw_account_data['account_data'][0]['fal_balance']
-    transfers_data = raw_account_data['account_data'][0]['transfers_data']
-
-    global iota_node
-    iota_node = settings[0]['host']
+    # global raw_account_data
+    # global settings
+    # global address_data
+    # global fal_balance
+    # global transfers_data
+    #
+    # raw_account_data = read_account_data(data)
+    # settings = raw_account_data['account_data'][0]['settings']
+    # address_data = raw_account_data['account_data'][0]['address_data']
+    # fal_balance = raw_account_data['account_data'][0]['fal_balance']
+    # transfers_data = raw_account_data['account_data'][0]['transfers_data']
+    #
+    # global iota_node
+    # iota_node = settings[0]['host']
 
     logged_in = True
 
