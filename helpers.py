@@ -6,6 +6,7 @@ from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from keyboard_interceptor import KeyboardInterruptHandler
+from messages import helpers
 
 _ver = sys.version_info
 
@@ -170,4 +171,72 @@ def is_valid_address(address_with_checksum):
         return False
 
 
+'''
+Asks the user to enter a number
+and will only accept the user input
+if it's a valid number
+'''
+
+
+def numbers_user_input(prompt):
+
+    while True:
+        user_input = fetch_user_input(prompt)
+        number = user_input.isdigit()
+        if number:
+            return int(user_input)
+        elif not number:
+            pretty_print('You didn\'t enter a number', color='red')
+
+
+'''
+Creates a unique file name by taking the first
+12 characters of the sha256 hash from a seed
+'''
+
+
+def create_file_name():
+    seed_hash = create_seed_hash(seed)
+    file_name = seed_hash[:12]
+    file_name += '.txt'
+    return file_name
+
+
+
+'''
+If there is no account file for the entered seed,
+ths function will ask the user for the node to connect to.
+The node address is then saved in the account file
+'''
+
+
+'''
+Converts Iotas into the unit that is set
+in the account settings and returns a string
+'''
+# TODO: Need to have a default case
+
+
+def convert_units(unit, value):
+    value = float(value)
+
+    if unit == 'i':
+        value = str(int(value)) + 'i'
+        return value
+    elif unit == 'ki':
+        value = '{0:.3f}'.format(value/1000)
+        value = str(value + 'Ki')
+        return value
+    elif unit == 'mi':
+        value = '{0:.6f}'.format(value / 1000000)
+        value = str(value) + 'Mi'
+        return value
+    elif unit == 'gi':
+        value = '{0:.9f}'.format(value / 1000000000)
+        value = str(value + 'Gi')
+        return value
+    elif unit == 'ti':
+        value = '{0:.12f}'.format(value / 1000000000000)
+        value = str(value + 'Ti')
+        return value
 

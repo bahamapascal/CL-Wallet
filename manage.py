@@ -1,5 +1,5 @@
 from helpers import fetch_user_input
-from address import Address
+from address_manager import AddressManager
 from balance import Balance
 from help import Help
 from account_info import AccountInfo
@@ -18,7 +18,7 @@ class Manage:
             'account info': AccountInfo,
             'full account info': AccountInfo,
             'find balance': Balance,
-            'generate new address': Address,
+            'generate new address': AddressManager,
             'send transfer': Transfer,
             'full account history': AccountInfo,
             'account history': AccountInfo,

@@ -140,7 +140,9 @@ class AccountHistory:
                 )
 
         if self.full_history:
-            # print_transaction_history(full_history)
+            pass
+          # print_transaction_history(full_history)
 
         elif not self.full_history:
-            #print_transaction_history(full_history)
+            pass
+          # print_transaction_history(full_history)
