@@ -1,4 +1,8 @@
 import sys
+import hashlib
+from iota import Iota, ProposedTransaction, Address,\
+    TryteString, Tag, Transaction
+from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from keyboard_interceptor import KeyboardInterruptHandler
@@ -88,3 +92,82 @@ def get_decoded_string(string):
             return string.decode()
 
         return string
+
+'''
+Returns a sha256 hash of the seed
+'''
+
+
+def create_seed_hash(seed):
+    return hashlib.sha256(seed.encode('utf-8')).hexdigest()
+
+'''
+Returns a sha256 hash of seed + address
+'''
+
+
+def get_checksum(address):
+    data = address + seed
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
+'''
+Verifies the integrity of a address
+and returns True or False
+'''
+
+
+def verify_checksum(checksum, address):
+    actual_checksum = get_checksum(address)
+    return actual_checksum == checksum
+
+'''
+Will ask the user for a yes or no
+and returns True or False accordingly
+'''
+
+
+def yes_no_user_input():
+
+    while True:
+        yes_no = fetch_user_input('Enter Y for yes or N for no: ')
+        yes_no = yes_no.lower()
+        if yes_no == 'n' or yes_no == 'no':
+            return False
+        elif yes_no == 'y' or yes_no == 'yes':
+            return True
+        else:
+            pretty_print(
+                'Ups seems like you entered something'
+                'different then "Y" or "N" '
+                )
+
+
+'''
+Takes a address (81 Characters) and
+converts it to an address with checksum (90 Characters)
+'''
+
+
+def address_checksum(address):
+    address = get_decoded_string(address)
+    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
+    addy = Address(bytes_address)
+    return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
+
+
+'''
+Takes an address with checksum
+and verifies if the address matches with the checksum
+'''
+
+
+def is_valid_address(address_with_checksum):
+    address = address_with_checksum[:81]
+    new_address_with_checksum = address_checksum(address)
+    if new_address_with_checksum == address_with_checksum:
+        return True
+    else:
+        return False
+
+
+

@@ -1,5 +1,4 @@
 import getpass
-import hashlib
 import json
 import time
 import datetime
@@ -13,58 +12,6 @@ import config
 from manage import Manage
 
 pretty_print('\nStarting wallet...\n\n\n\n')
-
-
-'''
-Returns a sha256 hash of the seed
-'''
-
-
-def create_seed_hash(seed):
-    return hashlib.sha256(seed.encode('utf-8')).hexdigest()
-
-
-'''
-Returns a sha256 hash of seed + address
-'''
-
-
-def get_checksum(address):
-    data = address + seed
-    return hashlib.sha256(data.encode('utf-8')).hexdigest()
-
-
-'''
-Verifies the integrity of a address
-and returns True or False
-'''
-
-
-def verify_checksum(checksum, address):
-    actual_checksum = get_checksum(address)
-    return actual_checksum == checksum
-
-
-'''
-Will ask the user for a yes or no
-and returns True or False accordingly
-'''
-
-
-def yes_no_user_input():
-
-    while True:
-        yes_no = fetch_user_input('Enter Y for yes or N for no: ')
-        yes_no = yes_no.lower()
-        if yes_no == 'n' or yes_no == 'no':
-            return False
-        elif yes_no == 'y' or yes_no == 'yes':
-            return True
-        else:
-            pretty_print(
-                'Ups seems like you entered something'
-                'different then "Y" or "N" '
-                )
 
 
 '''
@@ -345,34 +292,6 @@ def convert_units(value):
 
 
 '''
-Takes a address (81 Characters) and
-converts it to an address with checksum (90 Characters)
-'''
-
-
-def address_checksum(address):
-    address = get_decoded_string(address)
-    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
-    addy = Address(bytes_address)
-    return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
-
-
-'''
-Takes an address with checksum
-and verifies if the address matches with the checksum
-'''
-
-
-def is_valid_address(address_with_checksum):
-    address = address_with_checksum[:81]
-    new_address_with_checksum = address_checksum(address)
-    if new_address_with_checksum == address_with_checksum:
-        return True
-    else:
-        return False
-
-
-'''
 Writes the index, address and balance,
 as well as the checksum of address +
 seed into the account file
@@ -574,52 +493,6 @@ count data, it will start with the next higher address index
 '''
 
 
-def find_balance(count):
-    max_gap = 3
-    margin = 4
-    i = 0
-    balance_found = False
-    pretty_print(
-        'Generating addresses'
-        ' and checking for balance, please wait...\n',
-        )
-
-    while i < count and margin > 0:
-        pretty_print(
-            'Checking address '
-            + str(i+1) + ' in range of '
-            + str(count),
-            color='green'
-        )
-        generate_addresses(1)
-        index_list = []
-        for data in address_data:
-            index = data['index']
-            index_list.append(index)
-        max_index = max(index_list)
-        for data in address_data:
-            index = data['index']
-            balance = data['balance']
-            if index == max_index and balance > 0:
-                balance_found = True
-                address = data['address']
-                pretty_print(
-                    'Balance found! \n' +
-                    '   Index: ' + str(index) + '\n' +
-                    '   Address: ' + str(address) + '\n' +
-                    '   Balance: ' + convert_units(balance) + '\n',
-                    color='green'
-                )
-                margin = max_gap
-                if count - i <= max_gap:
-                    count += max_gap
-
-            elif index == max_index and margin <= max_gap:
-                margin -= 1
-
-        i += 1
-    if not balance_found:
-        pretty_print('No address with balance found!', color='red')
 
 
 '''
@@ -1326,93 +1199,6 @@ the saved addresses and saves the transaction data in the account file
 
 
 def get_transfers(full_history):
-    api = Iota(iota_node, seed)
-    address_count = len(address_data)
-    all_txn_hashes = []
-    saved_txn_hashes = []
-    new_txn_hashes = []
-    i = 0
-    short_t_id_start_idx = 0
-
-    while i < address_count:
-        address = address_data[i]['address']
-        address_as_versionsed = str(address) if is_py2 else bytes(address.encode())
-        raw_transfers = api.find_transactions(addresses=[Address(address_as_versionsed).address])
-        transactions_to_check = raw_transfers['hashes']
-
-        for txn_hash in transactions_to_check:
-            txn_hash = str(txn_hash)
-            all_txn_hashes.append(txn_hash)
-        i += 1
-
-    for txn_hash in transfers_data:
-        """
-        Check if there is already a short transaction id assigned previously.
-        If there is we'll assign the next id to start from
-        """
-        if txn_hash['short_transaction_id'] >= short_t_id_start_idx:
-            short_t_id_start_idx = txn_hash['short_transaction_id'] + 1
-
-        txn_hash = str(txn_hash['transaction_hash'])
-        saved_txn_hashes.append(txn_hash)
-
-    for txn_hash in all_txn_hashes:
-        if txn_hash not in saved_txn_hashes:
-            new_txn_hashes.append(txn_hash)
-
-    if len(new_txn_hashes) > 0:
-        pretty_print(
-            'Retrieving and saving transfer data from '
-            + str(len(new_txn_hashes))
-            + ' transaction(s)!\n'
-            'Please wait...\n',
-            color='blue'
-        )
-
-        for txn_hash in new_txn_hashes:
-            txn_hash_as_bytes = bytes(txn_hash) if is_py2 else bytes(txn_hash.encode())
-
-            '''
-            Needs to be integrated into new transactions as well
-            '''
-
-            li_result = api.get_latest_inclusion([txn_hash_as_bytes])
-            is_confirmed = li_result['states'][txn_hash]
-
-            gt_result = api.get_trytes([txn_hash_as_bytes])
-            trytes = str(gt_result['trytes'][0])
-            txn = Transaction.from_tryte_string(trytes)
-            timestamp = str(txn.timestamp)
-            tag = str(txn.tag)
-            address = str(txn.address)
-            short_transaction_id = short_t_id_start_idx
-
-            short_t_id_start_idx += 1  # increment short transaction id
-
-            '''
-            Placeholder until message decoding is added
-            '''
-            message = 'some message'
-            value = str(txn.value)
-            bundle = str(txn.bundle_hash)
-
-            write_transfers_data(
-                txn_hash,
-                is_confirmed,
-                timestamp,
-                tag,
-                address,
-                message,
-                value,
-                bundle,
-                short_transaction_id
-            )
-
-    if full_history:
-        print_transaction_history(full_history)
-
-    elif not full_history:
-        print_transaction_history(full_history)
 
 
 '''

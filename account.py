@@ -1,21 +1,6 @@
 import json
-from helpers import fetch_user_input, pretty_print
+from helpers import fetch_user_input, pretty_print, yes_no_user_input
 from messages import account
-
-
-def yes_no_user_input():
-    while True:
-        yes_no = fetch_user_input('Enter Y for yes or N for no: ')
-        yes_no = yes_no.lower()
-        if yes_no == 'n' or yes_no == 'no':
-            return False
-        elif yes_no == 'y' or yes_no == 'yes':
-            return True
-        else:
-            pretty_print(
-                'Ups seems like you entered something'
-                'different then "Y" or "N" '
-                )
 
 
 class Account:
@@ -58,7 +43,7 @@ class Account:
                     'account_data': {
                         'settings': settings,
                         'address_data': [],
-                        'fal_balance': [{'f_index': 0, 'l_index': 0}],
+                        'fal_balance': {'f_index': 0, 'l_index': 0},
                         'transfers_data': []
                     }
                 }
@@ -70,3 +55,12 @@ class Account:
                 json.dump(data, account_data)
 
                 return data
+
+    def update_data(self, data):
+        self.data = data
+
+        self.update_data_file()
+
+    def update_data_file(self):
+        with open(self.file_name, 'w') as account_data:
+            json.dump(self.data, account_data)
