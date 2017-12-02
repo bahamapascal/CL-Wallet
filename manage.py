@@ -3,6 +3,7 @@ from address_manager import AddressManager
 from balance import Balance
 from help import Help
 from account_info import AccountInfo
+from account_history import AccountHistory
 from settings import Settings
 from transfer import Transfer
 
@@ -36,29 +37,26 @@ class Manage:
         return self.manage(self.input)
 
     def manage(self, option):
-        without_args = [
-            'help'
-        ]
+        if option == 'help':
+            return Help()
+        elif option == 'settings':
+            return Settings(self.account)
+        elif option == 'account info':
+            return AccountInfo(self.account, standard=True)
+        elif option == 'full account info':
+            return AccountInfo(self.account)
+        elif option == 'find balance':
+            return Balance(self.account)
+        elif option == 'generate new address':
+            return AddressManager(self.account)
+        elif option == 'send transfer':
+            return Transfer(self.account)
+        elif option == 'full account history':
+            return AccountHistory(self.account, full=True)
+        elif option == 'account history':
+            return AccountHistory(self.account)
 
-        with_args = [
-            'settings',
-            'account info',
-            'full account info',
-            'find balance',
-            'generate new address',
-            'send transfer',
-            'full account history',
-            'account history',
-            'replay',
-            'exit'
-        ]
+        return self.invariant()
 
-        if option in without_args and option not in with_args:
-            return self.options[option]()
-        elif option in with_args and option not in without_args:
-            return self.options[option](self.account)
-
-        return self.validate()
-
-    def validate(self):
+    def invariant(self):
         print "FAILED"

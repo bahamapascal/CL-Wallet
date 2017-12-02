@@ -9,8 +9,9 @@ def main(account):
     # intercept keyboard interrupts for forcefully killing wallet
     # Would help us gracefully exiting the wallet upon user confirmation
     intercept_keyboard_interrupts(main)
+    execute = 1
 
-    while True:
+    while execute:
         Manage(account)
 
 
@@ -19,9 +20,6 @@ def init():
     initial_settings = config.settings
     account = Account(initial_settings)
 
-    execute = 1
-
-    while execute:
-        return main(account)
+    return main(account)
 
 init()

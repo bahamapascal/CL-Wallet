@@ -78,8 +78,8 @@ class AccountInfo:
             write_fal_balance(f_index, l_index)
 
     def get_standard_account_info(self):
-        address_count = len(self.account.data.address_data)
-        self.update_addresses_balance(self.account.fal_balance['f_index'])
+        address_count = len(self.account.data['account_data']['address_data'])
+        self.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
         self.update_fal_balance()
 
         if address_count < 1:

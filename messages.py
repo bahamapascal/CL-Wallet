@@ -28,3 +28,13 @@ wallet = dict(
 helpers = dict(
 
 )
+
+settings = dict(
+    description_min_weight_magnitude='Enter "min_weight_magnitude" to set the minWeightMagnitude',
+    description_units='Enter "unit" to set the Units used'
+            ' to display iota tokens (i,Ki,Mi,Gi,Ti)',
+    description_host='Enter "host" to set a new host to connect to',
+    description_current_settings='Enter "current_settings" to see',
+    description_back='Enter "back" to quit the settings menu\n\n',
+    command_input='Please enter a command: '
+)
