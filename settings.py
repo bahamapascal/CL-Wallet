@@ -1,5 +1,5 @@
 from helpers import fetch_user_input, numbers_user_input, pretty_print
-from messages import settings as console_messages
+from messages import settings as console_messages, common as common_console_messages
 
 
 class Settings:
@@ -11,87 +11,56 @@ class Settings:
 
     def initialize(self):
         self.keep_alive = True
-        self.set_settings()
+        self.manage_settings()
 
-    def set_settings(self):
+    def manage_settings(self):
         pretty_print(console_messages['description_min_weight_magnitude'])
         pretty_print(console_messages['description_units'])
         pretty_print(console_messages['description_host'])
         pretty_print(console_messages['description_current_settings'])
         pretty_print(console_messages['description_back'])
 
-        stay_in_settings = True
-        while stay_in_settings:
+        while self.keep_alive:
             user_command_input = fetch_user_input(console_messages['command_input'])
             account_clone = self.account.data.copy()
+
             if user_command_input == 'min_weight_magnitude':
-                account_clone['account_data']['settings']['min_weight_magnitude'] = numbers_user_input('\nPlease enter the minWeightMagnitude: ')
+                account_clone['account_data']['settings']['min_weight_magnitude'] = numbers_user_input(console_messages['enter_min_weight_magnitude'])
                 self.account.update_data(account_clone)
-                pretty_print(
-                    'MinWeightMagnitude set to '
-                    + str(account_clone['account_data']['settings']['min_weight_magnitude'])
-                    + '\n\n',
-                    color='blue'
-                )
+                pretty_print(console_messages['min_weight_magnitude_set'.format(str(account_clone['account_data']['settings']['min_weight_magnitude']))], color='blue')
 
             elif user_command_input == 'unit':
-                units = fetch_user_input('\nPlease enter "i","ki","mi","gi" or "ti": ')
+                units = fetch_user_input(console_messages['enter_units'])
                 if units == 'i' \
                         or units == 'ki' \
                         or units == 'mi' \
                         or units == 'gi' \
                         or units == 'ti':
-                    settings[0]['units'] = units
-                    with open(file_name, 'w') as account_data:
-                        json.dump(raw_account_data, account_data)
-                    pretty_print(
-                        'Units set to ' + str(settings[0]['units']) + '\n\n',
-                        color='blue'
-                    )
+                    account_clone['account_data']['settings']['units'] = units
+                    self.account.update_data(account_clone)
+                    pretty_print(console_messages['units_set'.format(str(account_clone['account_data']['settings']['units']))], color='blue')
 
                 else:
-                    pretty_print(
-                        '\n\nUps you seemed to have'
-                        ' entered something else'
-                        ' then "i","ki","mi","gi" or "ti" ',
-                        color='red'
-                    )
-                    pretty_print(
-                        'Please try again!\n\n',
-                        color='green'
-                    )
+                    pretty_print(console_messages['invalid_unit'], color='red')
+                    pretty_print(common_console_messages['try_again'], color='green')
 
             elif user_command_input == 'host':
-                settings[0]['host'] = fetch_user_input(
-                    '\nPlease enter the'
-                    ' host you want to connect to: '
-                )
-                with open(file_name, 'w') as account_data:
-                    json.dump(raw_account_data, account_data)
-                pretty_print(
-                    'Host set to ' + str(settings[0]['host']) + '\n\n',
-                    color='blue'
-                )
+                host = fetch_user_input(console_messages['enter_host'])
+                # TODO: Do validation for host
+                account_clone['account_data']['settings']['host'] = host
+                self.account.update_data(account_clone)
+                print host
+                pretty_print(console_messages['host_set'.format(str(host))])
 
             elif user_command_input == 'current_settings':
-                min_weight_magnitude = settings[0]['min_weight_magnitude']
-                units = settings[0]['units']
-                host = settings[0]['host']
-                pretty_print(
-                    '\n\nMinWeightMagnitude is currently set to '
-                    + str(min_weight_magnitude) + '\n' +
-                    'Units are set to ' + str(units) + '\n' +
-                    'Host is set to ' + str(host) + '\n\n',
-                    color='blue'
-                )
+                min_weight_magnitude = account_clone['account_data']['settings']['min_weight_magnitude']
+                units = account_clone['account_data']['settings']['units']
+                host = account_clone['account_data']['settings']['host']
+                pretty_print(console_messages['current_settings'.format(str(min_weight_magnitude), str(units), str(host))])
 
             elif user_command_input == 'back':
-                stay_in_settings = False
+                self.keep_alive = False
 
             else:
-                pretty_print(
-                    'Ups I didn\'t understand'
-                    ' that command. Please try again!',
-                    color='red'
-                )
+                pretty_print(common_console_messages['invalid_command'], color='red')
 
