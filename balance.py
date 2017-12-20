@@ -1,4 +1,7 @@
+from iota import Iota
 from helpers import pretty_print
+from messages import balance as balance_console_messages
+from helpers import convert_units
 
 
 class Balance:
@@ -6,39 +9,41 @@ class Balance:
         self.account = account
 
     def find_balance(self, count):
+        '''
+        
+        Quick hack for avoiding circular imports        
+        '''
+        from address_manager import AddressManager
+
         max_gap = 3
         margin = 4
         i = 0
         balance_found = False
-        pretty_print(
-            'Generating addresses'
-            ' and checking for balance, please wait...\n',
-        )
+        pretty_print(balance_console_messages['generating_addresses'], color='green')
 
         while i < count and margin > 0:
-            pretty_print(
-                'Checking address '
-                + str(i + 1) + ' in range of '
-                + str(count),
-                color='green'
-            )
-            self.generate_addresses(1)
+            pretty_print(balance_console_messages['checking_addresses'.format(i + 1, count)], color='green')
+            address_manager = AddressManager(self.account)
+            address_manager.generate(1)
+
             index_list = []
-            for data in self.account.data.account_data.address_data:
+
+            for data in self.account.data['account_data']['address_data']:
                 index = data['index']
                 index_list.append(index)
             max_index = max(index_list)
-            for data in self.account.data.account_data.address_data:
+            for data in self.account.data['account_data']['address_data']:
                 index = data['index']
                 balance = data['balance']
                 if index == max_index and balance > 0:
                     balance_found = True
                     address = data['address']
                     pretty_print(
-                        'Balance found! \n' +
-                        '   Index: ' + str(index) + '\n' +
-                        '   Address: ' + str(address) + '\n' +
-                        '   Balance: ' + convert_units(balance) + '\n',
+                        balance_console_messages['balance_found'.format(
+                            index,
+                            address,
+                            convert_units(self.account.data['settings']['units'], balance)
+                        )],
                         color='green'
                     )
                     margin = max_gap
@@ -50,37 +55,27 @@ class Balance:
 
             i += 1
         if not balance_found:
-            pretty_print('No address with balance found!', color='red')
+            pretty_print(balance_console_messages['no_address_with_balance'], color='red')
 
-    def generate_addresses(self, count):
-        index_list = [-1]
-        for data in self.account.data.account_data.address_data:
-            index = data['index']
-            index_list.append(index)
+    def retrieve(self, address):
+        api = Iota(self.account.data['account_data']['settings']['host'])
+        gna_result = api.get_balances([address])
+        balance = gna_result['balances']
 
-        if max(index_list) == -1:
-            start_index = 0
+        return balance[0]
+
+    def write_fal_balance(self, f_index=0, l_index=0):
+        account_clone = self.account.data.copy()
+
+        if f_index > 0 and l_index > 0:
+            account_clone.account_data.fal_balance['f_index'] = f_index
+            account_clone.account_data.fal_balance['l_index'] = l_index
+
+        elif f_index > 0:
+            account_clone.account_data.fal_balance['f_index'] = f_index
+        elif l_index > 0:
+            account_clone.account_data.fal_balance['l_index'] = l_index
         else:
-            start_index = max(index_list) + 1
+            return  # TODO: Improve this
 
-        as_encoded = seed if is_py2 else seed.encode('utf-8')
-        generator = AddressGenerator(as_encoded)
-
-        '''
-        This is the actual function to generate the address.
-        '''
-        addresses = generator.get_addresses(start_index, count)
-        i = 0
-
-        while i < count:
-            index = start_index + i
-            address = addresses[i]
-
-            versionised_address = str(address) if is_py2 else bytes(address)
-            balance = address_balance(versionised_address) if is_py2 else address_balance(versionised_address)
-            write_address_data(index, versionised_address, balance) if is_py2 else write_address_data(index,
-                                                                                                      versionised_address.decode(),
-                                                                                                      balance)
-            i += 1
-
-        update_fal_balance()
+        self.account.update_data(account_clone)

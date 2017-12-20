@@ -6,7 +6,6 @@ from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from keyboard_interceptor import KeyboardInterruptHandler
-from messages import helpers
 
 _ver = sys.version_info
 

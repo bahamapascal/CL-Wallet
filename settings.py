@@ -49,7 +49,6 @@ class Settings:
                 # TODO: Do validation for host
                 account_clone['account_data']['settings']['host'] = host
                 self.account.update_data(account_clone)
-                print host
                 pretty_print(console_messages['host_set'.format(str(host))])
 
             elif user_command_input == 'current_settings':

@@ -1,5 +1,5 @@
-settings = dict(
-    min_weight_magnitude=14,
-    host='http://bahamapascal-tn1.ddns.net:14200',
-    units='i'
-)
+settings = {
+    'min_weight_magnitude': 14,
+    'host': 'http://astra2261.startdedicated.net:14265',
+    'units': 'i'
+}

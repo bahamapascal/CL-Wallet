@@ -21,12 +21,65 @@ account = dict(
                 ' you want to connect to: '
 )
 
+account_info = dict(
+    start_index_not_found='Start index was not found.'
+                          ' You should generate more addresses'
+                          ' or use a lower start index',
+    scan_balance_prompt='\n\nThis seems to be the first time '
+                        'you are using this account with the CL wallet!\n'
+                        'If you are expecting balance on this account'
+                        ' you should scan for balance.\n'
+                        'Do you want to scan for balance?\n\n ',
+    address_generation_prompt='\n\nOkay great, I will generate addresses'
+                        ' and check them for balance!\n'
+                        'Please tell me how many addresses'
+                        ' I should check. If you say 100\n'
+                        'I will generate addresses until balance'
+                        ' is found or until 100 addresses\n'
+                        'have been generated.\n'
+                        'So, whats the maximum number of '
+                        'addresses I should check?\n\n',
+    maximum_addresses_prompt='Please enter the max number of addresses to check: ',
+    no_addresses_entered='You entered 0! I won\'t check any addresses.',
+    generate_deposit_address='\nOkay, then I will just generate a deposit address.\n'
+                             'In case you wan\'t to generate addresses'
+                             ' after that, you can use the \'find balance\' command.\n'
+                             'Generating deposit address...\n\n\n',
+    address_balance_info='Index: {} ' \
+                           + '   ' + '{}' \
+                           + '   balance: ' \
+                           + '{}' \
+                           + '\n',
+    invalid_checksum='Index: {} ' \
+                      + '   Invalid Checksum!!!' \
+                      + '\n',
+    deposit_address='\n' + 'Deposit address: ',
+    total_balance='\nTotal Balance: '
+)
+
+address_manager=dict(
+    invalid_checksum='Invalid checksum!!!',
+    generating_address='Generating address...',
+    deposit_address_exception='An error occurred while trying to get the deposit address'
+)
+
+balance = dict(
+    generating_addresses='Generating addresses'
+                         ' and checking for balance, please wait...\n',
+    checking_addresses='Checking address {} in range of {}',
+    balance_found='Balance found! \n' +
+                  '   Index: {}' + '\n' +
+                  '   Address: {}' + '\n' +
+                  '   Balance: {}' + '\n',
+    no_address_with_balance='No address with balance found!'
+)
+
 wallet = dict(
     welcome='\nStarting wallet...\n\n\n\n'
 )
 
 helpers = dict(
-
+    foo='baz'
 )
 
 settings = dict(
