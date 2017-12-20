@@ -106,7 +106,7 @@ Returns a sha256 hash of seed + address
 '''
 
 
-def get_checksum(address):
+def get_checksum(address, seed):
     data = address + seed
     return hashlib.sha256(data.encode('utf-8')).hexdigest()
 
@@ -116,8 +116,8 @@ and returns True or False
 '''
 
 
-def verify_checksum(checksum, address):
-    actual_checksum = get_checksum(address)
+def verify_checksum(checksum, address, seed):
+    actual_checksum = get_checksum(address, seed)
     return actual_checksum == checksum
 
 '''

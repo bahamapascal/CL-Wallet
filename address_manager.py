@@ -18,13 +18,11 @@ class AddressManager:
             if p['address'] == address.decode():
                 p['balance'] = balance
 
-                self.account.update_data()
-
                 self.account.update_data(account_clone)
                 return
 
-        checksum = get_checksum(address.decode())
-        account_clone.account_data.address_data.append({
+        checksum = get_checksum(address.decode(), self.account.seed)
+        account_clone['account_data']['address_data'].append({
             'index': index,
             'address': address.decode(),
             'balance': balance,
@@ -81,7 +79,7 @@ class AddressManager:
             for p in self.account.data['account_data']['address_data']:
                 address = p['address']
                 checksum = p['checksum']
-                integrity = verify_checksum(checksum, address)
+                integrity = verify_checksum(checksum, address, self.account.seed)
 
                 if p['index'] > l_index and integrity:
                     deposit_address = p['address']
@@ -96,9 +94,9 @@ class AddressManager:
             for p in self.account.data['account_data']['address_data']:
                 address = p['address']
                 checksum = p['checksum']
-                integrity = verify_checksum(checksum, address)
+                integrity = verify_checksum(checksum, address, self.account.seed)
                 if p['index'] > l_index and integrity:
                     deposit_address = p['address']
                     return deposit_address
-        except:
+        except ValueError as e:
             pretty_print(address_manager_console_messages['deposit_address_exception'])

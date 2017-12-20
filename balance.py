@@ -2,6 +2,7 @@ from iota import Iota
 from helpers import pretty_print
 from messages import balance as balance_console_messages
 from helpers import convert_units
+from iota import Address
 
 
 class Balance:
@@ -42,7 +43,7 @@ class Balance:
                         balance_console_messages['balance_found'.format(
                             index,
                             address,
-                            convert_units(self.account.data['settings']['units'], balance)
+                            convert_units(self.account.data['account_data']['settings']['units'], balance)
                         )],
                         color='green'
                     )
@@ -59,7 +60,7 @@ class Balance:
 
     def retrieve(self, address):
         api = Iota(self.account.data['account_data']['settings']['host'])
-        gna_result = api.get_balances([address])
+        gna_result = api.get_balances([Address(address).address])
         balance = gna_result['balances']
 
         return balance[0]
@@ -68,13 +69,13 @@ class Balance:
         account_clone = self.account.data.copy()
 
         if f_index > 0 and l_index > 0:
-            account_clone.account_data.fal_balance['f_index'] = f_index
-            account_clone.account_data.fal_balance['l_index'] = l_index
+            account_clone['account_data']['fal_balance']['f_index'] = f_index
+            account_clone['account_data']['fal_balance']['l_index'] = l_index
 
         elif f_index > 0:
-            account_clone.account_data.fal_balance['f_index'] = f_index
+            account_clone['account_data']['fal_balance']['f_index'] = f_index
         elif l_index > 0:
-            account_clone.account_data.fal_balance['l_index'] = l_index
+            account_clone['account_data']['fal_balance']['l_index'] = l_index
         else:
             return  # TODO: Improve this
 

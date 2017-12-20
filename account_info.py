@@ -90,18 +90,18 @@ class AccountInfo:
 
             account_clone = self.account.data.copy()
 
-            for p in account_clone.account_data.address_data:
+            for p in account_clone['account_data']['address_data']:
                 balance = p['balance']
                 address = p['address']
                 checksum = p['checksum']
-                integrity = verify_checksum(checksum, address)
+                integrity = verify_checksum(checksum, address, self.account.seed)
 
                 if balance > 0 and integrity:
                     total_balance += balance
                     data = account_info_console_messages['address_balance_info'.format(
                         p['index'],
                         address,
-                        convert_units(self.account.data['settings']['units'], balance)
+                        convert_units(self.account.data['account_data']['settings']['units'], balance)
                     )]
 
                     all_address_data += data
@@ -115,7 +115,8 @@ class AccountInfo:
             if total_balance > 0:
                 pretty_print(all_address_data)
                 pretty_print(account_info_console_messages['deposit_address'] + str(address_manager.get_deposit_address()), color='blue')
-                pretty_print(account_info_console_messages['total_balance'] + convert_units(total_balance))
+                pretty_print(account_info_console_messages['total_balance'] +
+                             convert_units(self.account.data['account_data']['settings']['units'], total_balance))
 
             else:
                 pretty_print('No addresses with balance!', color='red')
