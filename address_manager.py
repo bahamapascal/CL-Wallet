@@ -1,5 +1,5 @@
 from iota.crypto.addresses import AddressGenerator
-from helpers import pretty_print, is_py2, address_checksum, get_checksum, verify_checksum
+from helpers import pretty_print, is_py2, verify_checksum
 from messages import address_manager as address_manager_console_messages
 from balance import Balance
 
@@ -7,29 +7,6 @@ from balance import Balance
 class AddressManager:
     def __init__(self, account):
         self.account = account
-
-    def save_to_account_file(self, index, address, balance):
-        # Should not mutate here (address)
-        address = address_checksum(address) if is_py2 else address_checksum(address.encode())
-
-        account_clone = self.account.data.copy()
-
-        for p in account_clone['account_data']['address_data']:
-            if p['address'] == address.decode():
-                p['balance'] = balance
-
-                self.account.update_data(account_clone)
-                return
-
-        checksum = get_checksum(address.decode(), self.account.seed)
-        account_clone['account_data']['address_data'].append({
-            'index': index,
-            'address': address.decode(),
-            'balance': balance,
-            'checksum': checksum
-        })
-
-        self.account.update_data(account_clone)
 
     def generate(self, count):
         index_list = [-1]

@@ -1,6 +1,4 @@
-from iota import Iota, ProposedTransaction, Address,\
-    TryteString, Tag, Transaction
-from helpers import is_py2, pretty_print, address_checksum, get_checksum, yes_no_user_input, numbers_user_input, verify_checksum, \
+from helpers import pretty_print, yes_no_user_input, numbers_user_input, verify_checksum, \
     convert_units
 from messages import account_info as account_info_console_messages
 from balance import Balance
@@ -18,46 +16,48 @@ class AccountInfo:
             self.get_full_account_info()
 
     def get_full_account_info(self):
-        pass
+        balance_manager = Balance(self.account)
 
-    def update_addresses_balance(self, start_index=0):
-        max_index = 0
-        for data in self.account.data['account_data']['address_data']:
-            index = data['index']
-            if start_index <= index:
-                address_manager = AddressManager(self.account)
-                balance_manager = Balance(self.account)
+        balance_manager.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
+        balance_manager.update_fal_balance()
 
-                address = str(data['address'])
-                balance = balance_manager.retrieve(address)
-                address_manager.save_to_account_file(index, address, balance)
+        if len(self.account.data['account_data']['address_data']) > 0:
+            all_address_data = ''
+            for p in self.account.data['account_data']['address_data']:
+                address = p['address']
+                checksum = p['checksum']
+                balance = int(p['balance'])
+                integrity = verify_checksum(checksum, address, self.account.seed)
+                if integrity:
+                    data = 'Index: ' + str(p['index']) + '  ' \
+                           + p['address'] + \
+                           '   balance: ' + \
+                           convert_units(self.account.data['account_data']['settings']['units'], balance) + '\n'
+                    all_address_data += data
 
-            if max_index < index:
-                max_index = index
+                else:
+                    data = 'Index: ' \
+                           + str(p['index']) + \
+                           '   Invalid Checksum!!!' + '\n'
+                    all_address_data += data
 
-        if max_index < start_index:
-            pretty_print(account_info_console_messages['start_index_not_found'], color='red')
-
-    def update_fal_balance(self):
-        index_with_value = []
-
-        for data in self.account.data['account_data']['address_data']:
-            if data['balance'] > 0:
-                index = data['index']
-                index_with_value.append(index)
-
-        if len(index_with_value) > 0:
-            f_index = min(index_with_value)
-            l_index = max(index_with_value)
-
-            balance_manager = Balance(self.account)
-
-            balance_manager.write_fal_balance(f_index, l_index)
+            pretty_print(all_address_data)
+            fal_data = 'First index with balance: ' + str(
+                self.account.data['account_data']['fal_balance']['f_index']) + \
+                       '\n' + \
+                       'Last index with balance is: ' + \
+                       str(self.account.data['account_data']['fal_balance']['l_index'])
+            pretty_print(fal_data)
+        else:
+            pretty_print('No Data to display!', color='red')
 
     def get_standard_account_info(self):
+        balance_manager = Balance(self.account)
         address_count = len(self.account.data['account_data']['address_data'])
-        self.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
-        self.update_fal_balance()
+        address_manager = AddressManager(self.account)
+
+        balance_manager.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
+        balance_manager.update_fal_balance()
 
         if address_count < 1:
             pretty_print(account_info_console_messages['scan_balance_prompt'])
@@ -78,7 +78,6 @@ class AccountInfo:
                     pretty_print(account_info_console_messages['no_addresses_entered'], color='green')
             elif not yes:
                 pretty_print(account_info_console_messages['generate_deposit_address'])
-                address_manager = AddressManager(self.account)
 
                 address_manager.generate(1)
 

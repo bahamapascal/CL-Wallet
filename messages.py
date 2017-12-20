@@ -22,9 +22,6 @@ account = dict(
 )
 
 account_info = dict(
-    start_index_not_found='Start index was not found.'
-                          ' You should generate more addresses'
-                          ' or use a lower start index',
     scan_balance_prompt='\n\nThis seems to be the first time '
                         'you are using this account with the CL wallet!\n'
                         'If you are expecting balance on this account'
@@ -71,7 +68,10 @@ balance = dict(
                   '   Index: {}' + '\n' +
                   '   Address: {}' + '\n' +
                   '   Balance: {}' + '\n',
-    no_address_with_balance='No address with balance found!'
+    no_address_with_balance='No address with balance found!',
+    start_index_not_found='Start index was not found.'
+                          ' You should generate more addresses'
+                          ' or use a lower start index',
 )
 
 wallet = dict(
