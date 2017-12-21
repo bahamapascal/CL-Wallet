@@ -1,48 +1,30 @@
+from terminaltables import SingleTable
 from helpers import pretty_print
+from messages import help as console_messages
 
 
 class Help:
     def __init__(self):
-        self.print_help()
+        self.table_title = 'Help Section'
+        self.table_data = (
+            ('Command', 'Description'),
+            (console_messages['account_info']['command'], console_messages['account_info']['description']),
+            (console_messages['full_account_info']['command'], console_messages['full_account_info']['description']),
+            (console_messages['find_balance']['command'], console_messages['find_balance']['description']),
+            (console_messages['generate_new_address']['command'], console_messages['generate_new_address']['description']),
+            (console_messages['send_transfer']['command'], console_messages['send_transfer']['description']),
+            (console_messages['account_history']['command'], console_messages['account_history']['description']),
+            (console_messages['full_account_history']['command'], console_messages['full_account_history']['description']),
+            (console_messages['replay_bundle']['command'], console_messages['replay_bundle']['description']),
+            (console_messages['settings']['command'], console_messages['settings']['description']),
+            (console_messages['log_out']['command'], console_messages['log_out']['description']),
+            (console_messages['exit']['command'], console_messages['exit']['description']),
+        )
 
-    def print_help(self):
-        return pretty_print('''Avaliable commands:
+        self.print_content()
 
-    'account info'
-        Will show you each address containing balance, total balance and your deposit address.
+    def print_content(self):
+        table_instance = SingleTable(self.table_data, self.table_title)
+        table_instance.inner_row_border = True
 
-    'full account info'
-        Will show you all saved addresses and there corespoding balance.
-
-    'find balance'
-        Searches for the first address with balance within a user defined range(e.g. first 100 addresses)
-
-    'generate new address'
-        Generates one new addresses!
-
-    'send transfer'
-        Send one or more transfers
-
-    'account history'
-        Shows all confirmed transfers and all new transfers (from your saved account addreses)
-
-
-    'full account history'
-        Shows all transfers, including old non confirmed transfers (from your saved account addreses)
-
-    'replay bundle'
-        Re-attach transactions to a different part of the Tangle.
-        [Usage]: replay [short_transaction_id]
-        [Note]: You can look up the short_transaction_id from (account history) or (full account history) options.
-        [Example]: replay 36
-
-    'settings'
-        Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)
-
-    'log out'
-        Log out of your account and login with a different seed
-
-    'exit'
-        Exit the wallet.
-
-                ''')
+        pretty_print(table_instance.table, color='green')

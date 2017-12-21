@@ -111,3 +111,50 @@ common = dict(
     invalid_command='Ups I didn\'t understand'
                     ' that command. Please try again!' # TODO: Tweak sentence and wordings to make it more general
 )
+
+help = dict(
+    account_info=dict(
+        command='account_info',
+        description='Will show you each address containing balance, total balance and your deposit address.'
+    ),
+    full_account_info=dict(
+        command='full account info',
+        description='Will show you all saved addresses and there corresponding balance.'
+    ),
+    find_balance=dict(
+        command='find balance',
+        description='Searches for the first address with balance within a user defined range(e.g. first 100 addresses)'
+    ),
+    generate_new_address=dict(
+        command='generate new address',
+        description='Generates one new addresses.'
+    ),
+    send_transfer=dict(
+        command='send transfer',
+        description='Allows you to make one or more transfers.'
+    ),
+    account_history=dict(
+        command='account history',
+        description='Shows all confirmed transfers and all new transfers (from your saved account addresses)'
+    ),
+    full_account_history=dict(
+        command='full account history',
+        description='Shows all transfers, including old non confirmed transfers (from your saved account addresses).'
+    ),
+    replay_bundle=dict(
+        command='replay <short-transaction-id>',
+        description='Re-attach transactions to a different part of the Tangle.'
+    ),
+    settings=dict(
+        command='settings',
+        description='Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)'
+    ),
+    log_out=dict(
+        command='log out',
+        description='Log out of your account and login with a different seed'
+    ),
+    exit=dict(
+        command='exit',
+        description='Exit the wallet.'
+    )
+)
