@@ -633,6 +633,7 @@ If there is no saved address it will generate a new one
 
 def get_deposit_address():
     try:
+        update_fal_balance()
         l_index = fal_balance[0]['l_index']
         if l_index == 0:
             deposit_address = address_data[0]['address']
