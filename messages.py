@@ -114,7 +114,7 @@ common = dict(
 
 help = dict(
     account_info=dict(
-        command='account_info',
+        command='account info',
         description='Will show you each address containing balance, total balance and your deposit address.'
     ),
     full_account_info=dict(
@@ -157,4 +157,11 @@ help = dict(
         command='exit',
         description='Exit the wallet.'
     )
+)
+
+manage=dict(
+    help_info='\n \nPlease enter a command.'
+                                   ' Type \'help\' to see '
+                                   'all avaliable commands:  ',
+    invariant='Looks like you entered a wrong command.'
 )

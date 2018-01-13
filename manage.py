@@ -6,6 +6,8 @@ from account_info import AccountInfo
 from account_history import AccountHistory
 from settings import Settings
 from transfer import Transfer
+from messages import manage as console_messages
+from helpers import pretty_print
 
 
 class Manage:
@@ -30,9 +32,7 @@ class Manage:
         self.initialize()
 
     def initialize(self):
-        self.input = fetch_user_input('\n \nPlease enter a command.'
-                                   ' Type \'HELP\' to see '
-                                   'all avaliable commands:  ')
+        self.input = fetch_user_input(console_messages['help_info'])
 
         return self.manage(self.input)
 
@@ -59,4 +59,4 @@ class Manage:
         return self.invariant()
 
     def invariant(self):
-        print "FAILED"
+        pretty_print(console_messages['invariant'])
