@@ -167,10 +167,8 @@ and verifies if the address matches with the checksum
 def is_valid_address(address_with_checksum):
     address = address_with_checksum[:81]
     new_address_with_checksum = address_checksum(address)
-    if new_address_with_checksum == address_with_checksum:
-        return True
-    else:
-        return False
+
+    return new_address_with_checksum == address_with_checksum
 
 
 '''

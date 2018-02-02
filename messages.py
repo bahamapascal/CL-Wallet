@@ -167,3 +167,28 @@ manage=dict(
     help_info='\n \nPlease enter a command. \n\nType help to see all available commands: ',
     invariant='Looks like you entered a wrong command.'
 )
+
+transfer = dict(
+    receiving_address_prompt='\nPlease enter receiving address: ',
+    address_without_checksum_warning='You entered an address without checksum. Are you sure you want to continue?',
+    address_with_checksum='Good choice. Addresses with checksum are a lot safer to use.',
+    invalid_address='Invalid address.',
+    valid_address_info='Address must be 81 or 90 characters long.',
+    number_and_unit_promot='''
+    Enter a number and the the unit size.
+    Available units are "i" Iota, "ki" (Kilo Iota), "mi" (Mega Iota), "gi" (Giga Iota), "ti" (Terra Iota).
+    
+    Example: 12.3 gi
+    
+    ''',
+    amount_to_send_prompt='Please enter amount to send: ',
+    invalid_amount='You entered an amount greater than zero but smaller than 1 IOTA. Can only send whole IOTAs.',
+    insufficient_balance='You do not have sufficient balance. The available balance is {}',
+    invalid_unit_size='You did not enter a valid unit size.',
+    invalid_value='You did not enter a valid value.',
+    enter_message_prompt='Please enter a message: ',
+    enter_tag_prompt='Please enter a tag: ',
+    additional_transfer='Do you want to prepare another transfer?',
+    sending_transfer='Sending transfer... This may take a while.',
+    completed='Transaction completed.'
+)
