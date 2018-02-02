@@ -7,7 +7,7 @@ from account_history import AccountHistory
 from settings import Settings
 from transfer import Transfer
 from messages import manage as console_messages
-from helpers import pretty_print, find_balance
+from helpers import pretty_print, find_balance, handle_replay
 
 
 class Manage:
@@ -23,7 +23,21 @@ class Manage:
         return self.manage(self.input)
 
     def manage(self, option):
-        if option == 'help':
+        if 'replay' in option:
+            account_clone = self.account.data.copy()
+
+            min_weight_magnitude = account_clone['account_data']['settings']['min_weight_magnitude']
+            node = account_clone['account_data']['settings']['host']
+            transfers_data = account_clone['account_data']['transfers_data']
+
+            return handle_replay(
+                node,
+                self.account.seed,
+                option,
+                transfers_data,
+                min_weight_magnitude=min_weight_magnitude
+            )
+        elif option == 'help':
             return Help()
         elif option == 'settings':
             return Settings(self.account)
