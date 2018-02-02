@@ -13,12 +13,13 @@ account = dict(
         ' will be converted to a 9.',
     enter_seed='\n \nPlease enter your'
                             ' seed to login to your account: ',
-    seed_hash='\n\nThe Sha256 hash of your seed is:',
+    seed_hash='\n\nThe Sha256 hash of your seed is',
     seed_review='Should the seed be displayed for review?\n',
-    entered_seed='You entered ' + "{}" + ' as seed.',
+    entered_seed='You entered {} as seed.',
     seed_display_prompt='OK, seed won\'t be displayed!',
-    choose_host='\nPlease enter the host'
-                ' you want to connect to: '
+    choose_host='\nPlease enter the host you want to connect to: ',
+    new_host_set='New host set to {} ',
+    keeping_default_host='All right! I would not change the default host'
 )
 
 account_info = dict(

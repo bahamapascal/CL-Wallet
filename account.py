@@ -18,20 +18,15 @@ class Account:
 
         if yes:
             host = fetch_user_input(
-                '\nPlease enter the host'
-                ' you want to connect to: '
+                account['choose_host']
             )
 
-            pretty_print(
-                '\nHost set to '
-                + str(host)
-                + '\n\n',
-                color='blue'
-            )
+            host_info_message = account['new_host_set']
+            pretty_print(host_info_message.format(str(host)), color='blue')
 
             return host
 
-        pretty_print('Okay, I won\'t change the host!\n\n')
+        pretty_print(account['keeping_default_host'])
         return None
 
     def populate(self, settings):
@@ -104,8 +99,8 @@ class Account:
 
         yes = yes_no_user_input()
         if yes:
-            pretty_print(account['entered_seed'.format(seed)])
-
+            entered_seed_info_message = account['entered_seed']
+            pretty_print(entered_seed_info_message.format(seed))
         elif not yes:
             pretty_print(account['seed_display_prompt'], color='blue')
 
