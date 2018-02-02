@@ -22,4 +22,6 @@ def init():
 
     return main(account)
 
-init()
+
+if __name__ == '__main__':
+    init()

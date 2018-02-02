@@ -15,20 +15,6 @@ class Manage:
         self.account = account
         self.input = None
 
-        self.options = {
-            'settings': Settings,
-            'help': Help,
-            'account info': AccountInfo,
-            'full account info': AccountInfo,
-            'find balance': Balance,
-            'generate new address': AddressManager,
-            'send transfer': Transfer,
-            'full account history': AccountInfo,
-            'account history': AccountInfo,
-            'replay': AccountInfo,
-            'exit': AccountInfo,
-        }
-
         self.initialize()
 
     def initialize(self):
