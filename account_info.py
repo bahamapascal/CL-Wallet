@@ -66,6 +66,7 @@ class AccountInfo:
             if yes:
                 pretty_print(account_info_console_messages['address_generation_prompt'])
                 prompt = account_info_console_messages['maximum_addresses_prompt']
+
                 addresses_to_check = numbers_user_input(prompt)
 
                 if addresses_to_check > 0:

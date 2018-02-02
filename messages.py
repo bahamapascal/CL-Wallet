@@ -64,14 +64,9 @@ balance = dict(
     generating_addresses='Generating addresses'
                          ' and checking for balance, please wait...\n',
     checking_addresses='Checking address {} in range of {}',
-    balance_found='Balance found! \n' +
-                  '   Index: {}' + '\n' +
-                  '   Address: {}' + '\n' +
-                  '   Balance: {}' + '\n',
-    no_address_with_balance='No address with balance found!',
-    start_index_not_found='Start index was not found.'
-                          ' You should generate more addresses'
-                          ' or use a lower start index',
+    balance_found='Balance found. \n\nIndex: {} \n\n Address: {} \n\n Balance: {}',
+    no_address_with_balance='No address with balance found.',
+    start_index_not_found='Start index was not found. You should generate more addresses or use a lower start index'
 )
 
 wallet = dict(
@@ -156,6 +151,6 @@ help = dict(
 )
 
 manage=dict(
-    help_info='\n \nPlease enter a command. \n Type help to see all available commands',
+    help_info='\n \nPlease enter a command. \n\nType help to see all available commands: ',
     invariant='Looks like you entered a wrong command.'
 )

@@ -36,11 +36,11 @@ class AddressManager:
             versionised_address = str(address) if is_py2 else bytes(address)
             balance = balance_blueprint.retrieve(versionised_address) if is_py2 else balance_blueprint.retrieve(versionised_address)
 
-            self.save_to_account_file(index, versionised_address, balance) if is_py2 else \
-                self.save_to_account_file(index,
+            balance_blueprint.save_to_account_file(index, versionised_address, balance) if is_py2 else \
+                balance_blueprint.save_to_account_file(index,
                                           versionised_address.decode(),
                                           balance
-                                          )
+                            )
             i += 1
 
         balance_blueprint.write_fal_balance()

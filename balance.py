@@ -10,10 +10,10 @@ class Balance:
         self.account = account
 
     def find_balance(self, count):
-        '''
-        
+        """
         Quick hack for avoiding circular imports        
-        '''
+        """
+
         from address_manager import AddressManager
 
         max_gap = 3
@@ -23,7 +23,9 @@ class Balance:
         pretty_print(balance_console_messages['generating_addresses'], color='green')
 
         while i < count and margin > 0:
-            pretty_print(balance_console_messages['checking_addresses'.format(i + 1, count)], color='green')
+            info_message = balance_console_messages['checking_addresses']
+            pretty_print(info_message.format(i + 1, count), color='green')
+
             address_manager = AddressManager(self.account)
             address_manager.generate(1)
 
@@ -39,12 +41,14 @@ class Balance:
                 if index == max_index and balance > 0:
                     balance_found = True
                     address = data['address']
+
+                    balance_found_info_message = balance_console_messages['balance_found']
                     pretty_print(
-                        balance_console_messages['balance_found'.format(
+                        balance_found_info_message.format(
                             index,
                             address,
                             convert_units(self.account.data['account_data']['settings']['units'], balance)
-                        )],
+                        ),
                         color='green'
                     )
                     margin = max_gap
