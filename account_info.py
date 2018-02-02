@@ -1,3 +1,4 @@
+from terminaltables import SingleTable
 from helpers import pretty_print, yes_no_user_input, numbers_user_input, verify_checksum, \
     convert_units
 from messages import account_info as account_info_console_messages
@@ -15,6 +16,27 @@ class AccountInfo:
         else:
             self.get_full_account_info()
 
+    def render_full_account_information(self, address_data):
+        table_title = 'Full Account Information'
+        table_data = [(
+            ('Index', 'Address', 'Balance', 'Integrity')
+        )]
+
+        for d in address_data:
+            address = d['address']
+            checksum = d['checksum']
+            balance = int(d['balance'])
+            index = d['index']
+
+            integrity = verify_checksum(checksum, address, self.account.seed)
+
+            table_data.insert(len(table_data), (index, address, balance, u'\u2713' if integrity else 'x'))
+
+        table_instance = SingleTable(table_data, table_title)
+        table_instance.inner_row_border = True
+
+        pretty_print(table_instance.table, color='blue')
+
     def get_full_account_info(self):
         balance_manager = Balance(self.account)
 
@@ -22,34 +44,17 @@ class AccountInfo:
         balance_manager.update_fal_balance()
 
         if len(self.account.data['account_data']['address_data']) > 0:
-            all_address_data = ''
-            for p in self.account.data['account_data']['address_data']:
-                address = p['address']
-                checksum = p['checksum']
-                balance = int(p['balance'])
-                integrity = verify_checksum(checksum, address, self.account.seed)
-                if integrity:
-                    data = 'Index: ' + str(p['index']) + '  ' \
-                           + p['address'] + \
-                           '   balance: ' + \
-                           convert_units(self.account.data['account_data']['settings']['units'], balance) + '\n'
-                    all_address_data += data
+            self.render_full_account_information(self.account.data['account_data']['address_data'])
 
-                else:
-                    data = 'Index: ' \
-                           + str(p['index']) + \
-                           '   Invalid Checksum!!!' + '\n'
-                    all_address_data += data
+            first_index_with_balance_info_message = account_info_console_messages['first_index_with_balance']
+            last_index_with_balance_info_message = account_info_console_messages['last_index_with_balance']
+            first_index = self.account.data['account_data']['fal_balance']['f_index']
+            last_index = self.account.data['account_data']['fal_balance']['l_index']
 
-            pretty_print(all_address_data)
-            fal_data = 'First index with balance: ' + str(
-                self.account.data['account_data']['fal_balance']['f_index']) + \
-                       '\n' + \
-                       'Last index with balance is: ' + \
-                       str(self.account.data['account_data']['fal_balance']['l_index'])
-            pretty_print(fal_data)
+            pretty_print(first_index_with_balance_info_message.format(str(first_index)))
+            pretty_print(last_index_with_balance_info_message.format(str(last_index)))
         else:
-            pretty_print('No Data to display!', color='red')
+            pretty_print(account_info_console_messages['no_data'], color='red')
 
     def get_standard_account_info(self):
         balance_manager = Balance(self.account)

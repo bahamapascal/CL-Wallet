@@ -51,7 +51,10 @@ account_info = dict(
                       + '   Invalid Checksum!!!' \
                       + '\n',
     deposit_address='\n' + 'Deposit address: ',
-    total_balance='\nTotal Balance: '
+    total_balance='\nTotal Balance: ',
+    first_index_with_balance='First index with balance {}',
+    last_index_with_balance='Last index with balance {}',
+    no_data='No data to display.'
 )
 
 address_manager=dict(
