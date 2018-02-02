@@ -77,7 +77,9 @@ wallet = dict(
 )
 
 helpers = dict(
-    foo='baz'
+    balance_finder_general='How many addresses should be checked? ',
+    balance_finder_address_number_prompt='How many address should I generate? ',
+    invalid_number='You did not enter a number.'
 )
 
 settings = dict(

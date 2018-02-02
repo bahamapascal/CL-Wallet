@@ -1,14 +1,13 @@
 import sys
 from helpers import fetch_user_input
 from address_manager import AddressManager
-from balance import Balance
 from help import Help
 from account_info import AccountInfo
 from account_history import AccountHistory
 from settings import Settings
 from transfer import Transfer
 from messages import manage as console_messages
-from helpers import pretty_print
+from helpers import pretty_print, find_balance
 
 
 class Manage:
@@ -33,7 +32,7 @@ class Manage:
         elif option == 'full account info':
             return AccountInfo(self.account)
         elif option == 'find balance':
-            return Balance(self.account)
+            return find_balance(self.account)
         elif option == 'generate new address':
             return AddressManager(self.account)
         elif option == 'send transfer':

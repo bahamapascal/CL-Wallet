@@ -6,6 +6,9 @@ from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from keyboard_interceptor import KeyboardInterruptHandler
+from messages import helpers as helpers_console_messages
+from balance import Balance
+
 
 _ver = sys.version_info
 
@@ -178,14 +181,13 @@ if it's a valid number
 
 
 def numbers_user_input(prompt):
-
     while True:
         user_input = fetch_user_input(prompt)
         number = user_input.isdigit()
         if number:
             return int(user_input)
         elif not number:
-            pretty_print('You didn\'t enter a number', color='red')
+            pretty_print(helpers_console_messages['invalid_number'], color='red')
 
 
 '''
@@ -239,3 +241,17 @@ def convert_units(unit, value):
         value = str(value + 'Ti')
         return value
 
+
+"""
+    Wraps Balance
+"""
+
+
+def find_balance(account):
+    pretty_print(helpers_console_messages['balance_finder_general'])
+
+    count = numbers_user_input(helpers_console_messages['balance_finder_address_number_prompt'])
+
+    balance = Balance(account)
+
+    return balance.find_balance(count)

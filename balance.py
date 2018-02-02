@@ -1,7 +1,5 @@
 from iota import Iota
-from helpers import pretty_print, address_checksum, get_checksum, is_py2
 from messages import balance as balance_console_messages
-from helpers import convert_units
 from iota import Address
 
 
@@ -15,6 +13,7 @@ class Balance:
         """
 
         from address_manager import AddressManager
+        from helpers import pretty_print, convert_units
 
         max_gap = 3
         margin = 4
@@ -100,6 +99,9 @@ class Balance:
             self.write_fal_balance(f_index, l_index)
 
     def update_addresses_balance(self, start_index=0):
+
+        from helpers import pretty_print
+
         max_index = 0
         for data in self.account.data['account_data']['address_data']:
             index = data['index']
@@ -115,6 +117,9 @@ class Balance:
             pretty_print(balance_console_messages['start_index_not_found'], color='red')
 
     def save_to_account_file(self, index, address, balance):
+
+        from helpers import address_checksum, get_checksum, is_py2
+
         # Should not mutate here (address)
         address = address_checksum(address) if is_py2 else address_checksum(address.encode())
 
