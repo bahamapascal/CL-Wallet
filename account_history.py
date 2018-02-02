@@ -1,7 +1,10 @@
-import json
+import time
+import datetime
+from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
     TryteString, Tag, Transaction
-from helpers import pretty_print
+from helpers import pretty_print, is_py2, address_checksum, get_decoded_string, convert_units
+from messages import account_history as account_history_console_messages
 
 
 class AccountHistory:
@@ -24,7 +27,7 @@ class AccountHistory:
             short_transaction_id
     ):
         account_clone = self.account.data.copy()
-        transfers_data = account_clone.account_data.transfers_data
+        transfers_data = account_clone['account_data']['transfers_data']
 
         for p in transfers_data:
             if p['transaction_hash'] == transaction_hash:
@@ -51,11 +54,11 @@ class AccountHistory:
 
     def fetch_transactions(self):
         account = self.account
-        account_data = account.data.account_data
-        node = account_data.settings.host
-        address_data = account_data.address_data
+        account_data = account.data['account_data']
+        node = account_data['settings']['host']
+        address_data = account_data['address_data']
         seed = account.seed
-        transfers_data = account_data.transfers_data
+        transfers_data = account_data['transfers_data']
 
         api = Iota(node, seed)
         address_count = len(address_data)
@@ -139,10 +142,206 @@ class AccountHistory:
                     short_transaction_id
                 )
 
-        if self.full_history:
-            pass
-          # print_transaction_history(full_history)
+        self.render_history()
 
-        elif not self.full_history:
-            pass
-          # print_transaction_history(full_history)
+    def render_history(self):
+        account = self.account
+        account_data = account.data['account_data']
+        transfers_data = account_data['transfers_data']
+
+        current_unix_time = time.time()
+        '''
+        Sort the transactions by timestamp
+        '''
+
+        sorted_transactions = sorted(transfers_data, key=itemgetter('timestamp'))
+        addresses_with_new_transactions = []
+        addresses_with_confirmed_transactions = []
+        all_transactions = []
+        new_transactions = []
+        old_confirmed_transactions = []
+
+        for addy in sorted_transactions:
+            timestamp = addy['timestamp']
+            is_confirmed = str(addy['is_confirmed'])
+            if int(current_unix_time) - int(timestamp) < 25200:
+                address = address_checksum(str(addy['address']))
+                addresses_with_new_transactions.append(address)
+            elif is_confirmed == 'True':
+                address = address_checksum(str(addy['address'])) if is_py2 else address_checksum(
+                    (addy['address'].encode()))
+                addresses_with_confirmed_transactions.append(address)
+
+        addresses_with_confirmed_transactions = set(
+            addresses_with_confirmed_transactions
+        )
+
+        addresses_with_confirmed_transactions = list(
+            addresses_with_confirmed_transactions
+        )
+
+        addresses_with_new_transactions = set(
+            addresses_with_new_transactions
+        )
+
+        addresses_with_new_transactions = list(
+            addresses_with_new_transactions
+        )
+
+        for transaction in sorted_transactions:
+            timestamp = int(transaction['timestamp'])
+            txn_time = datetime.datetime.fromtimestamp(
+                int(timestamp)
+            ).strftime('%Y-%m-%d %H:%M:%S')
+            is_confirmed = str(transaction['is_confirmed'])
+            transaction_hash = transaction['transaction_hash']
+            address = address_checksum(str(transaction['address'])) if is_py2 \
+                else address_checksum(transaction['address'].encode())
+            bundle = transaction['bundle']
+            tag = transaction['tag']
+            value = transaction['value']
+            short_transaction_id = transaction['short_transaction_id']
+
+            if self.full_history:
+                data = {'txn_time': str(txn_time),
+                        'address': str(address),
+                        'transaction_hash': str(transaction_hash),
+                        'value': str(value),
+                        'tag': str(tag),
+                        'bundle': str(bundle),
+                        'is_confirmed': str(is_confirmed),
+                        'short_transaction_id': str(short_transaction_id)
+                        }
+
+                all_transactions.append(data)
+
+            elif current_unix_time - timestamp < 25200:
+                data = {
+                    'txn_time': str(txn_time),
+                    'address': str(address),
+                    'transaction_hash': str(transaction_hash),
+                    'value': str(value),
+                    'tag': str(tag),
+                    'bundle': str(bundle),
+                    'is_confirmed': str(is_confirmed),
+                    'short_transaction_id': str(short_transaction_id)
+                    }
+
+                new_transactions.append(data)
+
+            elif is_confirmed == 'True':
+                data = {
+                    'txn_time': str(txn_time),
+                    'transaction_hash': str(transaction_hash),
+                    'address': str(address),
+                    'value': str(value),
+                    'bundle': str(bundle),
+                    'tag': str(tag),
+                    'short_transaction_id': str(short_transaction_id)
+                    }
+
+                old_confirmed_transactions.append(data)
+
+        if len(new_transactions) > 0 and not self.full_history:
+            pretty_print(account_history_console_messages['account_history_console_messages'])
+
+            for addy in addresses_with_new_transactions:
+                addy = address_checksum(str(addy) if is_py2 else bytes(addy))
+
+                tx_to_from_info_message = account_history_console_messages['transactions_to_from']
+                pretty_print(tx_to_from_info_message.format(get_decoded_string(addy)))
+
+                for data in new_transactions:
+                    address = data['address']
+                    condition = address == addy if is_py2 else address == str(addy)
+
+                    if condition:
+                        txn_time = data['txn_time']
+                        transaction_hash = data['transaction_hash']
+                        value = data['value']
+                        bundle = data['bundle']
+                        tag = data['tag']
+                        is_confirmed = data['is_confirmed']
+                        short_transaction_id = data['short_transaction_id']
+
+                        # TODO: Use terminal tables here
+                        pretty_print(
+                            '' + txn_time + '\n' +
+                            '    Txn Hash: '
+                            + transaction_hash + '  ' +
+                            str(convert_units(
+                                self.account.data['account_data']['settings']['units'],
+                                value
+                            )) + '\n' +
+                            '    Bundle: ' + bundle + '\n' +
+                            '    Tag: ' + tag + '\n' +
+                            '    Confirmed: ' + is_confirmed + '\n' +
+                            '    Short Transaction ID: ' + short_transaction_id + '\n'
+                        )
+
+        if len(old_confirmed_transactions) > 0 and not self.full_history:
+            pretty_print(account_history_console_messages['old_transactions'])
+
+            for addy in addresses_with_confirmed_transactions:
+                addy = address_checksum(str(addy)) if is_py2 else address_checksum(addy)
+
+                tx_to_from_info_message = account_history_console_messages['transactions_to_from']
+                pretty_print(tx_to_from_info_message.format(get_decoded_string(addy)))
+
+                for data in old_confirmed_transactions:
+                    address = data['address']
+                    condition = address == addy if is_py2 else address == str(addy)
+
+                    if condition:
+                        txn_time = data['txn_time']
+                        transaction_hash = data['transaction_hash']
+                        value = data['value']
+                        bundle = data['bundle']
+                        tag = data['tag']
+                        short_transaction_id = data['short_transaction_id']
+                        pretty_print(
+                            ' ' + txn_time + '\n' +
+                            '    Txn Hash: ' + transaction_hash +
+                            '  ' + str(
+                                convert_units(
+                                    self.account.data['account_data']['settings']['units'],
+                                    value
+                            )) + '\n' +
+                            '    Bundle: ' + bundle + '\n' +
+                            '    Tag: ' + tag + '\n' +
+                            '    Short Transaction ID: ' + short_transaction_id + '\n'
+                        )
+
+        if len(new_transactions) == 0 and \
+                len(old_confirmed_transactions) == 0 and \
+                len(all_transactions) == 0:
+
+            pretty_print(account_history_console_messages['no_transactions_history'], color='red')
+
+        elif self.full_history:
+            pretty_print(account_history_console_messages['full_transactions_history'])
+
+            for data in all_transactions:
+                address = data['address']
+                txn_time = data['txn_time']
+                transaction_hash = data['transaction_hash']
+                value = data['value']
+                bundle = data['bundle']
+                tag = data['tag']
+                is_confirmed = data['is_confirmed']
+                short_transaction_id = data['short_transaction_id']
+                pretty_print(
+                    ' ' + txn_time + '\n' +
+                    ' To/From: ' + address + '\n'
+                                             '          Txn Hash: ' +
+                    transaction_hash + '  ' +
+                    str(
+                        convert_units(
+                            self.account.data['account_data']['settings']['units'],
+                            value
+                        )) + '\n' +
+                    '          Bundle: ' + bundle + '\n' +
+                    '          Tag: ' + tag + '\n' +
+                    '          Confirmed: ' + is_confirmed + '\n' +
+                    '          Short Transaction ID: ' + short_transaction_id + '\n'
+                )

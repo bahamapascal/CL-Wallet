@@ -57,6 +57,14 @@ account_info = dict(
     no_data='No data to display.'
 )
 
+account_history = dict(
+    new_transactions='\n\n\nNew transactions.',
+    old_transactions='\n\n\nOld transactions.',
+    full_transactions_history='\n\n\nFull transactions.',
+    transactions_to_from='\nTransactions to/from {}',
+    no_transactions_history='No transactions in history'
+)
+
 address_manager=dict(
     invalid_checksum='Invalid checksum!!!',
     generating_address='Generating address...',
