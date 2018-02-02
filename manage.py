@@ -1,3 +1,4 @@
+import sys
 from helpers import fetch_user_input
 from address_manager import AddressManager
 from balance import Balance
@@ -41,6 +42,8 @@ class Manage:
             return AccountHistory(self.account, full=True)
         elif option == 'account history':
             return AccountHistory(self.account)
+        elif option == 'logout' or option == 'exit':
+            return sys.exit(0)  # Dirty hack because too sleepy. Should be smooth exit.
 
         return self.invariant()
 

@@ -146,7 +146,7 @@ help = dict(
         description='Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)'
     ),
     log_out=dict(
-        command='log out',
+        command='logout',
         description='Log out of your account and login with a different seed'
     ),
     exit=dict(
@@ -156,8 +156,6 @@ help = dict(
 )
 
 manage=dict(
-    help_info='\n \nPlease enter a command.'
-                                   ' Type \'help\' to see '
-                                   'all avaliable commands:  ',
+    help_info='\n \nPlease enter a command. \n Type help to see all available commands',
     invariant='Looks like you entered a wrong command.'
 )
