@@ -1,7 +1,14 @@
 import sys
+import hashlib
+from iota import Iota, ProposedTransaction, Address,\
+    TryteString, Tag, Transaction
+from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from keyboard_interceptor import KeyboardInterruptHandler
+from messages import helpers as helpers_console_messages
+from balance import Balance
+
 
 _ver = sys.version_info
 
@@ -88,3 +95,161 @@ def get_decoded_string(string):
             return string.decode()
 
         return string
+
+'''
+Returns a sha256 hash of the seed
+'''
+
+
+def create_seed_hash(seed):
+    return hashlib.sha256(seed.encode('utf-8')).hexdigest()
+
+'''
+Returns a sha256 hash of seed + address
+'''
+
+
+def get_checksum(address, seed):
+    data = address + seed
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
+'''
+Verifies the integrity of a address
+and returns True or False
+'''
+
+
+def verify_checksum(checksum, address, seed):
+    actual_checksum = get_checksum(address, seed)
+    return actual_checksum == checksum
+
+'''
+Will ask the user for a yes or no
+and returns True or False accordingly
+'''
+
+
+def yes_no_user_input():
+
+    while True:
+        yes_no = fetch_user_input('Enter Y for yes or N for no: ')
+        yes_no = yes_no.lower()
+        if yes_no == 'n' or yes_no == 'no':
+            return False
+        elif yes_no == 'y' or yes_no == 'yes':
+            return True
+        else:
+            pretty_print(
+                'Ups seems like you entered something'
+                'different then "Y" or "N" '
+                )
+
+
+'''
+Takes a address (81 Characters) and
+converts it to an address with checksum (90 Characters)
+'''
+
+
+def address_checksum(address):
+    address = get_decoded_string(address)
+    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
+    addy = Address(bytes_address)
+    return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
+
+
+'''
+Takes an address with checksum
+and verifies if the address matches with the checksum
+'''
+
+
+def is_valid_address(address_with_checksum):
+    address = address_with_checksum[:81]
+    new_address_with_checksum = address_checksum(address)
+
+    return new_address_with_checksum == address_with_checksum
+
+
+'''
+Asks the user to enter a number
+and will only accept the user input
+if it's a valid number
+'''
+
+
+def numbers_user_input(prompt):
+    while True:
+        user_input = fetch_user_input(prompt)
+        number = user_input.isdigit()
+        if number:
+            return int(user_input)
+        elif not number:
+            pretty_print(helpers_console_messages['invalid_number'], color='red')
+
+
+'''
+Creates a unique file name by taking the first
+12 characters of the sha256 hash from a seed
+'''
+
+
+def create_file_name():
+    seed_hash = create_seed_hash(seed)
+    file_name = seed_hash[:12]
+    file_name += '.txt'
+    return file_name
+
+
+
+'''
+If there is no account file for the entered seed,
+ths function will ask the user for the node to connect to.
+The node address is then saved in the account file
+'''
+
+
+'''
+Converts Iotas into the unit that is set
+in the account settings and returns a string
+'''
+# TODO: Need to have a default case
+
+
+def convert_units(unit, value):
+    value = float(value)
+
+    if unit == 'i':
+        value = str(int(value)) + 'i'
+        return value
+    elif unit == 'ki':
+        value = '{0:.3f}'.format(value/1000)
+        value = str(value + 'Ki')
+        return value
+    elif unit == 'mi':
+        value = '{0:.6f}'.format(value / 1000000)
+        value = str(value) + 'Mi'
+        return value
+    elif unit == 'gi':
+        value = '{0:.9f}'.format(value / 1000000000)
+        value = str(value + 'Gi')
+        return value
+    elif unit == 'ti':
+        value = '{0:.12f}'.format(value / 1000000000000)
+        value = str(value + 'Ti')
+        return value
+
+
+"""
+    Wraps Balance
+"""
+
+
+def find_balance(account):
+    pretty_print(helpers_console_messages['balance_finder_general'])
+
+    count = numbers_user_input(helpers_console_messages['balance_finder_address_number_prompt'])
+
+    balance = Balance(account)
+
+    return balance.find_balance(count)
