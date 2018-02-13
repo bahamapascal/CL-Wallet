@@ -30,7 +30,7 @@ class AccountInfo:
 
             integrity = verify_checksum(checksum, address, self.account.seed)
 
-            table_data.insert(len(table_data), (index, address, balance, u'\u2713' if integrity else 'x'))
+            table_data.insert(len(table_data), (index, address, balance, 'Integrity Intact' if integrity else 'Integrity Violated'))
 
         table_instance = SingleTable(table_data, table_title)
         table_instance.inner_row_border = True
