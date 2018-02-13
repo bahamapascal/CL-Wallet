@@ -48,7 +48,9 @@ class Manage:
         elif option == 'find balance':
             return find_balance(self.account)
         elif option == 'generate new address':
-            return AddressManager(self.account)
+            pretty_print(console_messages['generate_new_address'])
+            manager = AddressManager(self.account)
+            return manager.generate(1)
         elif option == 'send transfer':
             return Transfer(self.account)
         elif option == 'full account history':

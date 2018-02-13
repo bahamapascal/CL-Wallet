@@ -30,7 +30,7 @@ class AccountInfo:
 
             integrity = verify_checksum(checksum, address, self.account.seed)
 
-            table_data.insert(len(table_data), (index, address, balance, u'\u2713' if integrity else 'x'))
+            table_data.insert(len(table_data), (index, address, balance, 'Integrity Intact' if integrity else 'Integrity Violated'))
 
         table_instance = SingleTable(table_data, table_title)
         table_instance.inner_row_border = True
@@ -103,11 +103,11 @@ class AccountInfo:
 
                 if balance > 0 and integrity:
                     total_balance += balance
-                    data = account_info_console_messages['address_balance_info'.format(
+                    data = account_info_console_messages['address_balance_info'].format(
                         p['index'],
                         address,
                         convert_units(self.account.data['account_data']['settings']['units'], balance)
-                    )]
+                    )
 
                     all_address_data += data
 

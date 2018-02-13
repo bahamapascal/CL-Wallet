@@ -44,7 +44,7 @@ account_info = dict(
                              ' after that, you can use the \'find balance\' command.\n'
                              'Generating deposit address...\n\n\n',
     address_balance_info='Index: {} ' \
-                           + '   ' + '{}' \
+                           + ' Address  ' + '{}' \
                            + '   balance: ' \
                            + '{}' \
                            + '\n',
@@ -166,7 +166,8 @@ help = dict(
 
 manage=dict(
     help_info='\n \nPlease enter a command. \n\nType help to see all available commands: ',
-    invariant='Looks like you entered a wrong command.'
+    invariant='Looks like you entered a wrong command.',
+    generate_new_address='Generating a new address...'
 )
 
 transfer = dict(

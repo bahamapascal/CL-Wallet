@@ -243,8 +243,6 @@ class AccountHistory:
                 old_confirmed_transactions.append(data)
 
         if len(new_transactions) > 0 and not self.full_history:
-            pretty_print(account_history_console_messages['account_history_console_messages'])
-
             for addy in addresses_with_new_transactions:
                 addy = address_checksum(str(addy) if is_py2 else bytes(addy))
 
