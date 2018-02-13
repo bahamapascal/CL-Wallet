@@ -103,11 +103,11 @@ class AccountInfo:
 
                 if balance > 0 and integrity:
                     total_balance += balance
-                    data = account_info_console_messages['address_balance_info'.format(
+                    data = account_info_console_messages['address_balance_info'].format(
                         p['index'],
                         address,
                         convert_units(self.account.data['account_data']['settings']['units'], balance)
-                    )]
+                    )
 
                     all_address_data += data
 
