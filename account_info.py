@@ -28,9 +28,9 @@ class AccountInfo:
             balance = int(d['balance'])
             index = d['index']
 
-            integrity = verify_checksum(checksum, address, self.account.seed)
+            has_valid_checksum = verify_checksum(checksum, address, self.account.seed)
 
-            table_data.insert(len(table_data), (index, address, balance, 'Integrity Intact' if integrity else 'Integrity Violated'))
+            table_data.insert(len(table_data), (index, address, balance, 'Valid Checksum' if has_valid_checksum else 'Invalid Checksum'))
 
         table_instance = SingleTable(table_data, table_title)
         table_instance.inner_row_border = True

@@ -1,4 +1,4 @@
 colorama==0.3.9
 flake8==3.4.1
-pyota==2.0.2
+pyota==2.0.5
 terminaltables

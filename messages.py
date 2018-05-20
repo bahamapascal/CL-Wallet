@@ -150,6 +150,10 @@ help = dict(
         command='replay <short-transaction-id>',
         description='Re-attach transactions to a different part of the Tangle.'
     ),
+    promote=dict(
+        command='promote <short-transaction-id>',
+        description='Promote transaction'
+    ),
     settings=dict(
         command='settings',
         description='Set the minWeightMagnitude and the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)'
