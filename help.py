@@ -16,6 +16,7 @@ class Help:
             (console_messages['account_history']['command'], console_messages['account_history']['description']),
             (console_messages['full_account_history']['command'], console_messages['full_account_history']['description']),
             (console_messages['replay_bundle']['command'], console_messages['replay_bundle']['description']),
+            (console_messages['promote']['command'], console_messages['promote']['description']),
             (console_messages['settings']['command'], console_messages['settings']['description']),
             (console_messages['log_out']['command'], console_messages['log_out']['description']),
             (console_messages['exit']['command'], console_messages['exit']['description']),

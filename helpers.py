@@ -5,6 +5,7 @@ from iota import Iota, ProposedTransaction, Address,\
 from iota.crypto.addresses import AddressGenerator
 from pretty_print import colors, PrettyPrint
 from replay import Replay
+from promote import Promote
 from keyboard_interceptor import KeyboardInterruptHandler
 from messages import helpers as helpers_console_messages
 from balance import Balance
@@ -30,6 +31,47 @@ def pretty_print(text, *args, **kwargs):
         return PrettyPrint(text, *args, **dict(kwargs, color=colors[kwargs['color']]))
 
     return PrettyPrint(text, *args, **kwargs)
+
+
+def find_bundle_hash_for_short_transaction_id(id, transactions):
+    bundle = None
+    if not transactions:
+        return None
+
+    for tx in transactions:
+        id_as_string = str(tx['short_transaction_id'])
+
+        if id_as_string == id:
+            bundle = tx['bundle']
+            break
+
+    return bundle
+
+
+def handle_promotion(node, command, transfers, **kwargs):
+    # Check if a valid command
+    arguments = command.split(' ', 1)
+    t_id = None
+
+    try:
+        t_id = arguments[1]
+    except IndexError:
+        return pretty_print('Invalid command - See example usage.')
+
+    bundle = find_bundle_hash_for_short_transaction_id(t_id.strip(), transfers)
+    
+    if bundle is None:
+        return pretty_print(
+            'Looks like there is no bundle associated with your specified short transaction id. Please try again'
+        )
+
+    pretty_print('Starting to promote your specified bundle. This might take a few seconds...', color='green')
+    return Promote(
+        node,
+        bundle,
+        alert_callback=lambda message: pretty_print(message, color='blue'),
+        **kwargs
+    )
 
 
 def handle_replay(node, seed, command, transfers, **kwargs):
@@ -60,7 +102,8 @@ def handle_replay(node, seed, command, transfers, **kwargs):
             'Looks like there is no bundle associated with your specified short transaction id. Please try again'
         )
 
-    pretty_print('Starting to replay your specified bundle. This might take a few second...', color='green')
+    pretty_print('Starting to replay your specified bundle. This might take a few seconds...', color='green')
+
     return Replay(
         node,
         seed,

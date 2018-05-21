@@ -1,8 +1,9 @@
 import time
 import datetime
+from terminaltables import SingleTable
 from operator import itemgetter
 from iota import Iota, ProposedTransaction, Address,\
-    TryteString, Tag, Transaction
+    TryteString, Tag, Transaction, Bundle
 from helpers import pretty_print, is_py2, address_checksum, get_decoded_string, convert_units
 from messages import account_history as account_history_console_messages
 
@@ -70,8 +71,11 @@ class AccountHistory:
 
         while i < address_count:
             address = address_data[i]['address']
-            address_as_versionsed = str(address) if is_py2 else bytes(address.encode())
-            raw_transfers = api.find_transactions(addresses=[Address(address_as_versionsed).address])
+            raw_transfers = api.find_transactions(
+                addresses=[
+                    Address(str(address) if is_py2 else bytes(address.encode())
+                            ).address
+                ])
             transactions_to_check = raw_transfers['hashes']
 
             for txn_hash in transactions_to_check:
@@ -297,6 +301,7 @@ class AccountHistory:
                         bundle = data['bundle']
                         tag = data['tag']
                         short_transaction_id = data['short_transaction_id']
+
                         pretty_print(
                             ' ' + txn_time + '\n' +
                             '    Txn Hash: ' + transaction_hash +
@@ -328,6 +333,7 @@ class AccountHistory:
                 tag = data['tag']
                 is_confirmed = data['is_confirmed']
                 short_transaction_id = data['short_transaction_id']
+
                 pretty_print(
                     ' ' + txn_time + '\n' +
                     ' To/From: ' + address + '\n'
