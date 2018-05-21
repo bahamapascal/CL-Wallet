@@ -301,21 +301,19 @@ class AccountHistory:
                         bundle = data['bundle']
                         tag = data['tag']
                         short_transaction_id = data['short_transaction_id']
-                        pretty_print(txn_time)
-                        self.display_history_table(bundle)
 
-                        # pretty_print(
-                        #     ' ' + txn_time + '\n' +
-                        #     '    Txn Hash: ' + transaction_hash +
-                        #     '  ' + str(
-                        #         convert_units(
-                        #             self.account.data['account_data']['settings']['units'],
-                        #             value
-                        #     )) + '\n' +
-                        #     '    Bundle: ' + bundle + '\n' +
-                        #     '    Tag: ' + tag + '\n' +
-                        #     '    Short Transaction ID: ' + short_transaction_id + '\n'
-                        # )
+                        pretty_print(
+                            ' ' + txn_time + '\n' +
+                            '    Txn Hash: ' + transaction_hash +
+                            '  ' + str(
+                                convert_units(
+                                    self.account.data['account_data']['settings']['units'],
+                                    value
+                            )) + '\n' +
+                            '    Bundle: ' + bundle + '\n' +
+                            '    Tag: ' + tag + '\n' +
+                            '    Short Transaction ID: ' + short_transaction_id + '\n'
+                        )
 
         if len(new_transactions) == 0 and \
                 len(old_confirmed_transactions) == 0 and \
@@ -336,51 +334,18 @@ class AccountHistory:
                 is_confirmed = data['is_confirmed']
                 short_transaction_id = data['short_transaction_id']
 
-                pretty_print(txn_time)
-                self.display_history_table(bundle)
-
-                # pretty_print(
-                #     ' ' + txn_time + '\n' +
-                #     ' To/From: ' + address + '\n'
-                #                              '          Txn Hash: ' +
-                #     transaction_hash + '  ' +
-                #     str(
-                #         convert_units(
-                #             self.account.data['account_data']['settings']['units'],
-                #             value
-                #         )) + '\n' +
-                #     '          Bundle: ' + bundle + '\n' +
-                #     '          Tag: ' + tag + '\n' +
-                #     '          Confirmed: ' + is_confirmed + '\n' +
-                #     '          Short Transaction ID: ' + short_transaction_id + '\n'
-                # )
-
-    def display_history_table(self, bundle_hash):
-        account_data = self.account.data['account_data']
-        node = account_data['settings']['host']
-        seed = self.account.seed
-
-        api = Iota(node, seed)
-
-        ft_result = api.find_transactions(bundles=[bundle_hash])
-        transaction_hashes = ft_result['hashes']
-
-        gt_result = api.get_trytes(transaction_hashes)
-
-        tail_transaction_hash = Bundle.from_tryte_strings(gt_result['trytes']).tail_transaction.hash
-        bundle = api.get_bundles(transaction=tail_transaction_hash)
-
-        for b in bundle['bundles']:
-            print Bundle(b)
-
-        table_data = (
-            ('Input', 'Descriptionasdadasddddddddddddddddddddddddddddddddddddddddddddddd'),
-            ('Input', 'Description'),
-            ('Input', 'Description'),
-            ('Input', 'Description'),
-        )
-
-        table_instance = SingleTable(table_data, bundle_hash)
-        table_instance.inner_row_border = True
-
-        pretty_print(table_instance.table, color='green')
+                pretty_print(
+                    ' ' + txn_time + '\n' +
+                    ' To/From: ' + address + '\n'
+                                             '          Txn Hash: ' +
+                    transaction_hash + '  ' +
+                    str(
+                        convert_units(
+                            self.account.data['account_data']['settings']['units'],
+                            value
+                        )) + '\n' +
+                    '          Bundle: ' + bundle + '\n' +
+                    '          Tag: ' + tag + '\n' +
+                    '          Confirmed: ' + is_confirmed + '\n' +
+                    '          Short Transaction ID: ' + short_transaction_id + '\n'
+                )
