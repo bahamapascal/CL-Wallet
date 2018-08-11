@@ -46,36 +46,55 @@ class Transfer:
 
             recipient_address = bytes(recipient_address) if is_py2 else bytes(recipient_address.encode())
 
-            user_message = fetch_user_input(transfer_console_messages['enter_message_prompt'])
+            """
+            Check if receive address is unspent.
+            """
 
-            user_tag = fetch_user_input(transfer_console_messages['enter_tag_prompt'])
-            user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
+            api = Iota(
+                self.account.data['account_data']['settings']['host'],
+                self.account.seed
+            )
 
-            transfer_value = self.get_user_input(self.prepared)
+            # result = dict(states, duration)
+            result = api.were_addresses_spent_from([recipient_address])
 
-            txn = \
-                ProposedTransaction(
-                    address=Address(
-                        recipient_address
-                    ),
+            # If recipient address is not spent, allow transfer
+            if not result['states'][0]:
+                user_message = fetch_user_input(transfer_console_messages['enter_message_prompt'])
 
-                    message=TryteString.from_string(user_message),
-                    tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
-                    value=transfer_value,
-                )
+                user_tag = fetch_user_input(transfer_console_messages['enter_tag_prompt'])
+                user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
 
-            self.prepared.append(txn)
-            pretty_print(transfer_console_messages['additional_transfer'])
+                transfer_value = self.get_user_input(self.prepared)
 
-            yes = yes_no_user_input()
+                txn = \
+                    ProposedTransaction(
+                        address=Address(
+                            recipient_address
+                        ),
 
-            if not yes:
-                self.keep_alive = False
+                        message=TryteString.from_string(user_message),
+                        tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
+                        value=transfer_value,
+                    )
 
-        self.review()
+                self.prepared.append(txn)
+                pretty_print(transfer_console_messages['additional_transfer'])
+
+                yes = yes_no_user_input()
+
+                if not yes:
+                    self.keep_alive = False
+
+                self.review()
+            # Otherwise, block the transfer and ask user to re-enter recipient address
+            else:
+                pretty_print(transfer_console_messages['recipient_address_already_spent'], color='red')
+
+                self.prepare()
 
     def get_user_input(self, prepared_transfers):
-        pretty_print(transfer_console_messages['number_and_unit_promot'])
+        pretty_print(transfer_console_messages['number_and_unit_prompt'])
 
         balance_manager = Balance(self.account)
 

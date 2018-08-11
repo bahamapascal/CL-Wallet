@@ -5,14 +5,14 @@ account = dict(
             '(while in Beta)\n'
             'Do you want to connect to another host?\n\n',
     login_welcome='\n\n\n------------------------------------------------'
-        'Account login---------------------------------------'
-        '-----------------'
-        '\n\nA seed should only contain the letters A-Z and 9.'
-        ' Lowercase letters will automatically be converted to\n'
-        'uppercase and everything else that is not A-Z,'
-        ' will be converted to a 9.',
+                  'Account login---------------------------------------'
+                  '-----------------'
+                  '\n\nA seed should only contain the letters A-Z and 9.'
+                  ' Lowercase letters will automatically be converted to\n'
+                  'uppercase and everything else that is not A-Z,'
+                  ' will be converted to a 9.',
     enter_seed='\n \nPlease enter your'
-                            ' seed to login to your account: ',
+               ' seed to login to your account: ',
     seed_hash='\n\nThe Sha256 hash of your seed is',
     seed_review='Should the seed be displayed for review?\n',
     entered_seed='You entered {} as seed.',
@@ -29,14 +29,14 @@ account_info = dict(
                         ' you should scan for balance.\n'
                         'Do you want to scan for balance?\n\n ',
     address_generation_prompt='\n\nOkay great, I will generate addresses'
-                        ' and check them for balance!\n'
-                        'Please tell me how many addresses'
-                        ' I should check. If you say 100\n'
-                        'I will generate addresses until balance'
-                        ' is found or until 100 addresses\n'
-                        'have been generated.\n'
-                        'So, whats the maximum number of '
-                        'addresses I should check?\n\n',
+                              ' and check them for balance!\n'
+                              'Please tell me how many addresses'
+                              ' I should check. If you say 100\n'
+                              'I will generate addresses until balance'
+                              ' is found or until 100 addresses\n'
+                              'have been generated.\n'
+                              'So, whats the maximum number of '
+                              'addresses I should check?\n\n',
     maximum_addresses_prompt='Please enter the max number of addresses to check: ',
     no_addresses_entered='You entered 0! I won\'t check any addresses.',
     generate_deposit_address='\nOkay, then I will just generate a deposit address.\n'
@@ -44,13 +44,13 @@ account_info = dict(
                              ' after that, you can use the \'find balance\' command.\n'
                              'Generating deposit address...\n\n\n',
     address_balance_info='Index: {} ' \
-                           + ' Address  ' + '{}' \
-                           + '   balance: ' \
-                           + '{}' \
-                           + '\n',
+                         + ' Address  ' + '{}' \
+                         + '   balance: ' \
+                         + '{}' \
+                         + '\n',
     invalid_checksum='Index: {} ' \
-                      + '   Invalid Checksum!!!' \
-                      + '\n',
+                     + '   Invalid Checksum!!!' \
+                     + '\n',
     deposit_address='\n' + 'Deposit address: ',
     total_balance='\nTotal Balance: ',
     first_index_with_balance='First index with balance {}',
@@ -66,7 +66,7 @@ account_history = dict(
     no_transactions_history='No transactions in history'
 )
 
-address_manager=dict(
+address_manager = dict(
     invalid_checksum='Invalid checksum!!!',
     generating_address='Generating address...',
     deposit_address_exception='An error occurred while trying to get the deposit address'
@@ -168,7 +168,7 @@ help = dict(
     )
 )
 
-manage=dict(
+manage = dict(
     help_info='\n \nPlease enter a command. \n\nType help to see all available commands: ',
     invariant='Looks like you entered a wrong command.',
     generate_new_address='Generating a new address...'
@@ -183,9 +183,9 @@ transfer = dict(
     number_and_unit_promot='''
     Enter a number and the the unit size.
     Available units are "i" Iota, "ki" (Kilo Iota), "mi" (Mega Iota), "gi" (Giga Iota), "ti" (Terra Iota).
-    
+
     Example: 12.3 gi
-    
+
     ''',
     amount_to_send_prompt='Please enter amount to send: ',
     invalid_amount='You entered an amount greater than zero but smaller than 1 IOTA. Can only send whole IOTAs.',
@@ -196,5 +196,6 @@ transfer = dict(
     enter_tag_prompt='Please enter a tag: ',
     additional_transfer='Do you want to prepare another transfer?',
     sending_transfer='Sending transfer... This may take a while.',
-    completed='Transaction completed.'
+    completed='Transaction completed.',
+    recipient_address_already_spent='Recipient address is already spent. Please try again with a different address.'
 )
