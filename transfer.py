@@ -1,3 +1,4 @@
+from terminaltables import SingleTable
 from helpers import pretty_print, yes_no_user_input, fetch_user_input, is_valid_address, is_py2, convert_units
 from messages import transfer as transfer_console_messages, common as common_console_messages
 from balance import Balance
@@ -262,9 +263,9 @@ class Transfer:
                 )
 
     def review(self):
-        transfers_to_print = ''
+        table_title = 'Review Transfers'
+        table_data = [('Address', 'Value', 'Message', 'Tag')]
 
-        # TODO: Use terminal tables here and console messages map.
         for txn in self.prepared:
             address = str(txn.address)
 
@@ -272,44 +273,45 @@ class Transfer:
                 self.account.data['account_data']['settings']['units'],
                 int(txn.value)
             ))
-            line = '------------------------------------------------' \
-                   '--------------------------------------------' \
-                   '------------------\n'
-            transfers_to_print += address + '  |  ' + value + '\n' + line
+
+            message = txn.message or '-'
+            tag = txn.tag if txn.tag != ('9' * 27) else '-'
+
+            table_data.append((address, value, message, tag))
 
         pretty_print(
-            '\n\n\nDestination:                                  '
-            '                                              |  Value:\n'
-            '-----------------------------------------------------'
-            '---------------------------------------------------------',
+            SingleTable(table_data, table_title).table,
             color='green'
         )
-        pretty_print(transfers_to_print)
-        pretty_print('\n\nPlease review the transfer(s) carefully!\n', color='blue')
+
+        pretty_print(transfer_console_messages['please_review_transfers'], color='blue')
 
         ask_user = True
         while ask_user:
-            user_input = fetch_user_input('\nEnter \'confirm\' to send the transfer(s)\n'
-                                          'Enter \'cancel\' to cancel the transfer(s)')
+            user_input = fetch_user_input(
+                transfer_console_messages['enter_confirm_to_send_transfers'] +
+                '\n' +
+                transfer_console_messages['enter_cancel_to_cancel_transfers']
+            )
+
             user_input = user_input.upper()
 
             if user_input == 'CONFIRM':
-                pretty_print(
-                    '\n\nOkay, sending transfer(s) now. '
-                    'This can take a while...'
-                )
+                pretty_print(transfer_console_messages['sending_transfers'])
+
                 ask_user = False
                 try:
                     self.send()
                 except Exception as e:
-                    pretty_print('A error occurred :(', color='red')
+                    pretty_print(common_console_messages['error_occurred'], color='red')
 
             elif user_input == 'CANCEL':
-                pretty_print('\n\nTransfer(s) canceled!', color='red')
+                pretty_print(transfer_console_messages['transfers_cancelled'], color='red')
                 ask_user = False
 
             else:
-                pretty_print('Ups, I didn\'t understand that. Please try again!', color='red')
+                pretty_print(common_console_messages['invalid_command'], color='red')
+                pretty_print(common_console_messages['try_again'], color='red')
 
     def get_inputs(self):
         inputs = []

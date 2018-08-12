@@ -114,7 +114,8 @@ settings = dict(
 
 common = dict(
     try_again='Please try again.',
-    invalid_command='Looks like you entered an incorrect command.'
+    invalid_command='Looks like you entered an incorrect command.',
+    error_occurred='An error occurred.'
 )
 
 help = dict(
@@ -180,7 +181,7 @@ transfer = dict(
     address_with_checksum='Good choice. Addresses with checksum are a lot safer to use.',
     invalid_address='Invalid address.',
     valid_address_info='Address must be 81 or 90 characters long.',
-    number_and_unit_promot='''
+    number_and_unit_prompt='''
     Enter a number and the the unit size.
     Available units are "i" Iota, "ki" (Kilo Iota), "mi" (Mega Iota), "gi" (Giga Iota), "ti" (Terra Iota).
 
@@ -197,5 +198,10 @@ transfer = dict(
     additional_transfer='Do you want to prepare another transfer?',
     sending_transfer='Sending transfer... This may take a while.',
     completed='Transaction completed.',
-    recipient_address_already_spent='Recipient address is already spent. Please try again with a different address.'
+    recipient_address_already_spent='Recipient address is already spent. Please try again with a different address.',
+    please_review_transfers='Please review the transfer(s) carefully',
+    sending_transfers='Sending transfers...',
+    transfers_cancelled='Transfer(s) cancelled',
+    enter_confirm_to_send_transfers='Enter "confirm" to send transfer(s)',
+    enter_cancel_to_cancel_transfers='Enter "cancel" to cancel transfer(s)',
 )
