@@ -84,10 +84,13 @@ class Transfer:
 
                 yes = yes_no_user_input()
 
+                # If user does not wish to add another transfer
+                # move to review step
                 if not yes:
                     self.keep_alive = False
 
-                self.review()
+                    self.review()
+
             # Otherwise, block the transfer and ask user to re-enter recipient address
             else:
                 pretty_print(transfer_console_messages['recipient_address_already_spent'], color='red')
