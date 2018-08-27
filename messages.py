@@ -5,14 +5,14 @@ account = dict(
             '(while in Beta)\n'
             'Do you want to connect to another host?\n\n',
     login_welcome='\n\n\n------------------------------------------------'
-        'Account login---------------------------------------'
-        '-----------------'
-        '\n\nA seed should only contain the letters A-Z and 9.'
-        ' Lowercase letters will automatically be converted to\n'
-        'uppercase and everything else that is not A-Z,'
-        ' will be converted to a 9.',
+                  'Account login---------------------------------------'
+                  '-----------------'
+                  '\n\nA seed should only contain the letters A-Z and 9.'
+                  ' Lowercase letters will automatically be converted to\n'
+                  'uppercase and everything else that is not A-Z,'
+                  ' will be converted to a 9.',
     enter_seed='\n \nPlease enter your'
-                            ' seed to login to your account: ',
+               ' seed to login to your account: ',
     seed_hash='\n\nThe Sha256 hash of your seed is',
     seed_review='Should the seed be displayed for review?\n',
     entered_seed='You entered {} as seed.',
@@ -29,14 +29,14 @@ account_info = dict(
                         ' you should scan for balance.\n'
                         'Do you want to scan for balance?\n\n ',
     address_generation_prompt='\n\nOkay great, I will generate addresses'
-                        ' and check them for balance!\n'
-                        'Please tell me how many addresses'
-                        ' I should check. If you say 100\n'
-                        'I will generate addresses until balance'
-                        ' is found or until 100 addresses\n'
-                        'have been generated.\n'
-                        'So, whats the maximum number of '
-                        'addresses I should check?\n\n',
+                              ' and check them for balance!\n'
+                              'Please tell me how many addresses'
+                              ' I should check. If you say 100\n'
+                              'I will generate addresses until balance'
+                              ' is found or until 100 addresses\n'
+                              'have been generated.\n'
+                              'So, whats the maximum number of '
+                              'addresses I should check?\n\n',
     maximum_addresses_prompt='Please enter the max number of addresses to check: ',
     no_addresses_entered='You entered 0! I won\'t check any addresses.',
     generate_deposit_address='\nOkay, then I will just generate a deposit address.\n'
@@ -44,13 +44,13 @@ account_info = dict(
                              ' after that, you can use the \'find balance\' command.\n'
                              'Generating deposit address...\n\n\n',
     address_balance_info='Index: {} ' \
-                           + ' Address  ' + '{}' \
-                           + '   balance: ' \
-                           + '{}' \
-                           + '\n',
+                         + ' Address  ' + '{}' \
+                         + '   balance: ' \
+                         + '{}' \
+                         + '\n',
     invalid_checksum='Index: {} ' \
-                      + '   Invalid Checksum!!!' \
-                      + '\n',
+                     + '   Invalid Checksum!!!' \
+                     + '\n',
     deposit_address='\n' + 'Deposit address: ',
     total_balance='\nTotal Balance: ',
     first_index_with_balance='First index with balance {}',
@@ -66,7 +66,7 @@ account_history = dict(
     no_transactions_history='No transactions in history'
 )
 
-address_manager=dict(
+address_manager = dict(
     invalid_checksum='Invalid checksum!!!',
     generating_address='Generating address...',
     deposit_address_exception='An error occurred while trying to get the deposit address'
@@ -92,24 +92,24 @@ helpers = dict(
 )
 
 settings = dict(
-    description_min_weight_magnitude='Enter "min_weight_magnitude" to set the minWeightMagnitude',
-    description_units='Enter "unit" to set the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)',
-    description_host='Enter "host" to set a new host to connect to',
-    description_current_settings='Enter "current_settings" to see',
-    description_back='Enter "back" to quit the settings menu\n\n',
+    description_min_weight_magnitude='Enter "mwm" to update the min weight magnitude',
+    description_units='Enter "unit" to update the units used to display iota tokens (i, Ki, Mi, Gi, Ti)',
+    description_host='Enter "host" to update host',
+    description_back='Enter "back" to quit the settings menu\n',
     command_input='Please enter a command: ',
-    enter_min_weight_magnitude='\nPlease enter the minWeightMagnitude: ',
-    min_weight_magnitude_set='minWeightMagnitude set to {} \n\n',
-    enter_units='\nPlease enter "i","ki","mi","gi" or "ti": ',
-    units_set='Units set to ' + "{}" + '\n\n',
+    enter_min_weight_magnitude='\nPlease enter the min weight magnitude: ',
+    min_weight_magnitude_set='Min weight magnitude set to {} \n',
+    enter_units='\nPlease enter "i", "ki", "mi", "gi" or "ti": ',
+    units_set='Units set to ' + "{}" + '\n',
     invalid_unit='\n\nOops! Looks like you entered something else than "i","ki","mi","gi" or "ti"',
     enter_host='\nPlease enter the host you want to connect to: ',
-    host_set='Host set to {} \n\n',
+    host_set='Host set to {} \n',
     currently_set=dict(
         mwm='Minimum Weight Magnitude',
         host='Host',
         units='Units'
-    )
+    ),
+    invalid_url='You have entered an invalid host.'
 )
 
 common = dict(
@@ -168,7 +168,7 @@ help = dict(
     )
 )
 
-manage=dict(
+manage = dict(
     help_info='\n \nPlease enter a command. \n\nType help to see all available commands: ',
     invariant='Looks like you entered a wrong command.',
     generate_new_address='Generating a new address...'
@@ -183,9 +183,9 @@ transfer = dict(
     number_and_unit_promot='''
     Enter a number and the the unit size.
     Available units are "i" Iota, "ki" (Kilo Iota), "mi" (Mega Iota), "gi" (Giga Iota), "ti" (Terra Iota).
-    
+
     Example: 12.3 gi
-    
+
     ''',
     amount_to_send_prompt='Please enter amount to send: ',
     invalid_amount='You entered an amount greater than zero but smaller than 1 IOTA. Can only send whole IOTAs.',
