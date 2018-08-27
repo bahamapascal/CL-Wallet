@@ -92,24 +92,24 @@ helpers = dict(
 )
 
 settings = dict(
-    description_min_weight_magnitude='Enter "min_weight_magnitude" to set the minWeightMagnitude',
-    description_units='Enter "unit" to set the Units used to display iota tokens (i,Ki,Mi,Gi,Ti)',
-    description_host='Enter "host" to set a new host to connect to',
-    description_current_settings='Enter "current_settings" to see',
-    description_back='Enter "back" to quit the settings menu\n\n',
+    description_min_weight_magnitude='Enter "mwm" to update the min weight magnitude',
+    description_units='Enter "unit" to update the units used to display iota tokens (i, Ki, Mi, Gi, Ti)',
+    description_host='Enter "host" to update host',
+    description_back='Enter "back" to quit the settings menu\n',
     command_input='Please enter a command: ',
-    enter_min_weight_magnitude='\nPlease enter the minWeightMagnitude: ',
-    min_weight_magnitude_set='minWeightMagnitude set to {} \n\n',
-    enter_units='\nPlease enter "i","ki","mi","gi" or "ti": ',
-    units_set='Units set to ' + "{}" + '\n\n',
+    enter_min_weight_magnitude='\nPlease enter the min weight magnitude: ',
+    min_weight_magnitude_set='Min weight magnitude set to {} \n',
+    enter_units='\nPlease enter "i", "ki", "mi", "gi" or "ti": ',
+    units_set='Units set to ' + "{}" + '\n',
     invalid_unit='\n\nOops! Looks like you entered something else than "i","ki","mi","gi" or "ti"',
     enter_host='\nPlease enter the host you want to connect to: ',
-    host_set='Host set to {} \n\n',
+    host_set='Host set to {} \n',
     currently_set=dict(
         mwm='Minimum Weight Magnitude',
         host='Host',
         units='Units'
-    )
+    ),
+    invalid_url='You have entered an invalid host.'
 )
 
 common = dict(

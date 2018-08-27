@@ -1,15 +1,19 @@
 import sys
 import hashlib
-from iota import Iota, ProposedTransaction, Address,\
-    TryteString, Tag, Transaction
-from iota.crypto.addresses import AddressGenerator
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    # for py3
+    from urllib.parse import urlparse
+
+from iota import Address
 from pretty_print import colors, PrettyPrint
 from replay import Replay
 from promote import Promote
 from keyboard_interceptor import KeyboardInterruptHandler
 from messages import helpers as helpers_console_messages
 from balance import Balance
-
 
 _ver = sys.version_info
 
@@ -59,7 +63,7 @@ def handle_promotion(node, command, transfers, **kwargs):
         return pretty_print('Invalid command - See example usage.')
 
     bundle = find_bundle_hash_for_short_transaction_id(t_id.strip(), transfers)
-    
+
     if bundle is None:
         return pretty_print(
             'Looks like there is no bundle associated with your specified short transaction id. Please try again'
@@ -89,7 +93,7 @@ def handle_replay(node, seed, command, transfers, **kwargs):
 
     if not transfers:
         return pretty_print('Looks like you do not have any account history.')
-    
+
     for transfer in transfers:
         id_as_string = str(transfer['short_transaction_id'])
 
@@ -124,7 +128,7 @@ def is_string(string):
 def confirms(value):
     """
     :param value: string
-    :return boolean: 
+    :return boolean:
     """
     as_lower = value.lower() if is_string(value) else str(value).lower()
     return as_lower == 'y' or as_lower == 'yes'
@@ -139,6 +143,7 @@ def get_decoded_string(string):
 
         return string
 
+
 '''
 Returns a sha256 hash of the seed
 '''
@@ -146,6 +151,7 @@ Returns a sha256 hash of the seed
 
 def create_seed_hash(seed):
     return hashlib.sha256(seed.encode('utf-8')).hexdigest()
+
 
 '''
 Returns a sha256 hash of seed + address
@@ -155,6 +161,7 @@ Returns a sha256 hash of seed + address
 def get_checksum(address, seed):
     data = address + seed
     return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
 
 '''
 Verifies the integrity of a address
@@ -166,6 +173,7 @@ def verify_checksum(checksum, address, seed):
     actual_checksum = get_checksum(address, seed)
     return actual_checksum == checksum
 
+
 '''
 Will ask the user for a yes or no
 and returns True or False accordingly
@@ -173,7 +181,6 @@ and returns True or False accordingly
 
 
 def yes_no_user_input():
-
     while True:
         yes_no = fetch_user_input('Enter Y for yes or N for no: ')
         yes_no = yes_no.lower()
@@ -185,7 +192,7 @@ def yes_no_user_input():
             pretty_print(
                 'Ups seems like you entered something'
                 'different then "Y" or "N" '
-                )
+            )
 
 
 '''
@@ -196,7 +203,7 @@ converts it to an address with checksum (90 Characters)
 
 def address_checksum(address):
     address = get_decoded_string(address)
-    bytes_address = bytes(address) if is_py2 else bytes(address,'utf8')
+    bytes_address = bytes(address) if is_py2 else bytes(address, 'utf8')
     addy = Address(bytes_address)
     return str(addy.with_valid_checksum()) if is_py2 else bytes(addy.with_valid_checksum())
 
@@ -244,18 +251,18 @@ def create_file_name():
     return file_name
 
 
-
 '''
 If there is no account file for the entered seed,
 ths function will ask the user for the node to connect to.
 The node address is then saved in the account file
 '''
 
-
 '''
 Converts Iotas into the unit that is set
 in the account settings and returns a string
 '''
+
+
 # TODO: Need to have a default case
 
 
@@ -266,7 +273,7 @@ def convert_units(unit, value):
         value = str(int(value)) + 'i'
         return value
     elif unit == 'ki':
-        value = '{0:.3f}'.format(value/1000)
+        value = '{0:.3f}'.format(value / 1000)
         value = str(value + 'Ki')
         return value
     elif unit == 'mi':
@@ -296,3 +303,18 @@ def find_balance(account):
     balance = Balance(account)
 
     return balance.find_balance(count)
+
+
+def is_valid_uri(uri):
+    """
+    :param uri:
+        uri to validate
+
+    :return:
+        boolean
+    """
+    try:
+        result = urlparse(uri)
+        return result.scheme and result.netloc
+    except:
+        return False
