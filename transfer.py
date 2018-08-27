@@ -1,3 +1,4 @@
+from terminaltables import SingleTable
 from helpers import pretty_print, yes_no_user_input, fetch_user_input, is_valid_address, is_py2, convert_units
 from messages import transfer as transfer_console_messages, common as common_console_messages
 from balance import Balance
@@ -46,36 +47,58 @@ class Transfer:
 
             recipient_address = bytes(recipient_address) if is_py2 else bytes(recipient_address.encode())
 
-            user_message = fetch_user_input(transfer_console_messages['enter_message_prompt'])
+            """
+            Check if receive address is unspent.
+            """
 
-            user_tag = fetch_user_input(transfer_console_messages['enter_tag_prompt'])
-            user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
+            api = Iota(
+                self.account.data['account_data']['settings']['host'],
+                self.account.seed
+            )
 
-            transfer_value = self.get_user_input(self.prepared)
+            # result = dict(states, duration)
+            result = api.were_addresses_spent_from([recipient_address])
 
-            txn = \
-                ProposedTransaction(
-                    address=Address(
-                        recipient_address
-                    ),
+            # If recipient address is not spent, allow transfer
+            if not result['states'][0]:
+                user_message = fetch_user_input(transfer_console_messages['enter_message_prompt'])
 
-                    message=TryteString.from_string(user_message),
-                    tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
-                    value=transfer_value,
-                )
+                user_tag = fetch_user_input(transfer_console_messages['enter_tag_prompt'])
+                user_tag = bytes(user_tag) if is_py2 else bytes(user_tag.encode())
 
-            self.prepared.append(txn)
-            pretty_print(transfer_console_messages['additional_transfer'])
+                transfer_value = self.get_user_input(self.prepared)
 
-            yes = yes_no_user_input()
+                txn = \
+                    ProposedTransaction(
+                        address=Address(
+                            recipient_address
+                        ),
 
-            if not yes:
-                self.keep_alive = False
+                        message=TryteString.from_string(user_message),
+                        tag=Tag(user_tag) if is_py2 else Tag(TryteString.from_bytes(user_tag)),
+                        value=transfer_value,
+                    )
 
-        self.review()
+                self.prepared.append(txn)
+                pretty_print(transfer_console_messages['additional_transfer'])
+
+                yes = yes_no_user_input()
+
+                # If user does not wish to add another transfer
+                # move to review step
+                if not yes:
+                    self.keep_alive = False
+
+                    self.review()
+
+            # Otherwise, block the transfer and ask user to re-enter recipient address
+            else:
+                pretty_print(transfer_console_messages['recipient_address_already_spent'], color='red')
+
+                self.prepare()
 
     def get_user_input(self, prepared_transfers):
-        pretty_print(transfer_console_messages['number_and_unit_promot'])
+        pretty_print(transfer_console_messages['number_and_unit_prompt'])
 
         balance_manager = Balance(self.account)
 
@@ -243,9 +266,9 @@ class Transfer:
                 )
 
     def review(self):
-        transfers_to_print = ''
+        table_title = 'Review Transfers'
+        table_data = [('Address', 'Value', 'Message', 'Tag')]
 
-        # TODO: Use terminal tables here and console messages map.
         for txn in self.prepared:
             address = str(txn.address)
 
@@ -253,44 +276,45 @@ class Transfer:
                 self.account.data['account_data']['settings']['units'],
                 int(txn.value)
             ))
-            line = '------------------------------------------------' \
-                   '--------------------------------------------' \
-                   '------------------\n'
-            transfers_to_print += address + '  |  ' + value + '\n' + line
+
+            message = txn.message or '-'
+            tag = txn.tag if txn.tag != ('9' * 27) else '-'
+
+            table_data.append((address, value, message, tag))
 
         pretty_print(
-            '\n\n\nDestination:                                  '
-            '                                              |  Value:\n'
-            '-----------------------------------------------------'
-            '---------------------------------------------------------',
+            SingleTable(table_data, table_title).table,
             color='green'
         )
-        pretty_print(transfers_to_print)
-        pretty_print('\n\nPlease review the transfer(s) carefully!\n', color='blue')
+
+        pretty_print(transfer_console_messages['please_review_transfers'], color='blue')
 
         ask_user = True
         while ask_user:
-            user_input = fetch_user_input('\nEnter \'confirm\' to send the transfer(s)\n'
-                                          'Enter \'cancel\' to cancel the transfer(s)')
+            user_input = fetch_user_input(
+                transfer_console_messages['enter_confirm_to_send_transfers'] +
+                '\n' +
+                transfer_console_messages['enter_cancel_to_cancel_transfers']
+            )
+
             user_input = user_input.upper()
 
             if user_input == 'CONFIRM':
-                pretty_print(
-                    '\n\nOkay, sending transfer(s) now. '
-                    'This can take a while...'
-                )
+                pretty_print(transfer_console_messages['sending_transfers'])
+
                 ask_user = False
                 try:
                     self.send()
                 except Exception as e:
-                    pretty_print('A error occurred :(', color='red')
+                    pretty_print(common_console_messages['error_occurred'], color='red')
 
             elif user_input == 'CANCEL':
-                pretty_print('\n\nTransfer(s) canceled!', color='red')
+                pretty_print(transfer_console_messages['transfers_cancelled'], color='red')
                 ask_user = False
 
             else:
-                pretty_print('Ups, I didn\'t understand that. Please try again!', color='red')
+                pretty_print(common_console_messages['invalid_command'], color='red')
+                pretty_print(common_console_messages['try_again'], color='red')
 
     def get_inputs(self):
         inputs = []
