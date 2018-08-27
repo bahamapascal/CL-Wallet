@@ -41,7 +41,7 @@ class Promote:
                 if callable(self.alert_callback):
                     self.alert_callback('Successfully promoted your specified transaction!')
         except Exception as e:
-            print str(e)
+            print(str(e))
             if callable(self.alert_callback):
                 self.alert_callback('Something went wrong while promoting your bundle! Please try again.')
 
