@@ -57,14 +57,24 @@ class AccountInfo:
             pretty_print(account_info_console_messages['no_data'], color='red')
 
     def get_standard_account_info(self):
-        balance_manager = Balance(self.account)
-        address_count = len(self.account.data['account_data']['address_data'])
+        """
+        Gets basic account information
+
+        :return:
+            None
+        """
+
+        # Initialize address manager
         address_manager = AddressManager(self.account)
 
-        balance_manager.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
-        balance_manager.update_fal_balance()
+        # Check if account has any address information stored locally
+        has_addresses = len(address_manager.get_addresses()) > 0
 
-        if address_count < 1:
+        # balance_manager.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
+        # balance_manager.update_fal_balance()
+
+        # If has no addresses in the history, then prompt user to generate addresses
+        if not has_addresses:
             pretty_print(account_info_console_messages['scan_balance_prompt'])
             yes = yes_no_user_input()
 
@@ -72,15 +82,15 @@ class AccountInfo:
                 pretty_print(account_info_console_messages['address_generation_prompt'])
                 prompt = account_info_console_messages['maximum_addresses_prompt']
 
-                addresses_to_check = numbers_user_input(prompt)
+                addresses_to_generate = numbers_user_input(prompt)
 
-                if addresses_to_check > 0:
-                    balance_blueprint = Balance(self.account)
-                    balance_blueprint.find_balance(addresses_to_check)
+                if addresses_to_generate > 0:
+                    # Generate addresses, find latest balances against those addresses and save to file
+                    address_manager.generate_addresses_with_data(addresses_to_generate, persist=True)
 
                     self.get_standard_account_info()
 
-                elif addresses_to_check == 0:
+                elif addresses_to_generate == 0:
                     pretty_print(account_info_console_messages['no_addresses_entered'], color='green')
             elif not yes:
                 pretty_print(account_info_console_messages['generate_deposit_address'])
@@ -88,8 +98,7 @@ class AccountInfo:
                 address_manager.generate(1)
 
                 self.get_standard_account_info()
-
-        elif address_count > 0:
+        else:
             all_address_data = ''
             total_balance = 0
 
@@ -119,10 +128,13 @@ class AccountInfo:
             address_manager = AddressManager(self.account)
             if total_balance > 0:
                 pretty_print(all_address_data)
-                pretty_print(account_info_console_messages['deposit_address'] + str(address_manager.get_deposit_address()), color='blue')
+                pretty_print(
+                    account_info_console_messages['deposit_address'] + str(address_manager.get_deposit_address()),
+                    color='blue')
                 pretty_print(account_info_console_messages['total_balance'] +
                              convert_units(self.account.data['account_data']['settings']['units'], total_balance))
 
             else:
                 pretty_print('No addresses with balance!', color='red')
                 pretty_print('\n' + 'Deposit address: ' + str(address_manager.get_deposit_address()), color='blue')
+
