@@ -68,6 +68,12 @@ class Balance:
 
         return balance[0]
 
+    def get_balances(self, addresses):
+        api = Iota(self.account.data['account_data']['settings']['host'])
+        gna_result = api.get_balances(addresses)
+
+        return gna_result['balances']
+
     def write_fal_balance(self, f_index=0, l_index=0):
         account_clone = self.account.data.copy()
 
