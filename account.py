@@ -1,3 +1,4 @@
+from iota.json import JsonEncoder
 import getpass
 import json
 from helpers import fetch_user_input, pretty_print, yes_no_user_input, is_py2, create_seed_hash
@@ -5,14 +6,37 @@ from messages import account
 
 
 class Account:
+    """
+     Contains account related data.
+     """
+
     def __init__(self, initial_settings):
+        """
+        Account seed
+        """
+
         self.seed = None
+        """
+        Account file name
+        """
         self.file_name = None
+
+        """
+        Account data
+        """
+
         self.data = None
 
         self.login(initial_settings)
 
     def grab_host(self):
+        """
+        Gets IRI node uri from user as input.
+
+        :return:
+          str | None
+        """
+
         pretty_print(account['welcome'])
         yes = yes_no_user_input()
 
@@ -30,6 +54,16 @@ class Account:
         return None
 
     def populate(self, settings):
+        """
+        Initialize account data
+
+        :param settings:
+          dict: Account settings.
+
+        :return:
+          dict: Account data.
+        """
+
         try:
             with open(self.file_name, 'r') as account_data:
                 data = json.load(account_data)
@@ -41,7 +75,8 @@ class Account:
                         'settings': settings,
                         'address_data': [],
                         'fal_balance': {'f_index': 0, 'l_index': 0},
-                        'transfers_data': []
+                        'transfers_data': [],
+                        'hashes': []
                     }
                 }
 
@@ -54,15 +89,42 @@ class Account:
                 return data
 
     def update_data(self, data):
+        """
+        Update account data in memory and in file
+
+        :param data:
+          dict: Account data.
+
+        :return:
+          None
+        """
+
         self.data = data
 
         self.update_data_file()
 
     def update_data_file(self):
+        """
+        Update account data account file
+
+        :return:
+          None
+        """
+
         with open(self.file_name, 'w') as account_data:
-            json.dump(self.data, account_data)
+            json.dump(self.data, account_data, cls=JsonEncoder, indent=2)
 
     def create_file_name(self, seed):
+        """
+        Create account file
+
+        :param seed:
+          str: Seed.
+
+        :return:
+          str: File name.
+        """
+
         seed_hash = create_seed_hash(seed)
         file_name = seed_hash[:12]
         file_name += '.txt'
@@ -70,6 +132,16 @@ class Account:
         return file_name
 
     def login(self, initial_settings):
+        """
+        Gets user's seed as an input and proceed to command center
+
+        :param initial_settings:
+          dict: Default account settings.
+
+        :return:
+          None
+        """
+
         pretty_print(account['login_welcome'], color='green')
 
         password = getpass.getpass(account['enter_seed'])

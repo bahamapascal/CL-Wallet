@@ -11,18 +11,45 @@ from helpers import pretty_print, find_balance, handle_replay, handle_promotion
 
 
 class Manage:
+    """
+    Class for managing wallet (user commands).
+    """
+
     def __init__(self, account):
+        """
+        Account class instance
+        """
+
         self.account = account
+
+        """
+        User's input
+        """
+
         self.input = None
 
         self.initialize()
 
     def initialize(self):
+        """
+        Gets user's input.
+
+        :return:
+          None
+        """
+
         self.input = fetch_user_input(console_messages['help_info'])
 
         return self.manage(self.input)
 
     def manage(self, option):
+        """
+        Accepts user entered command and perform specific function.
+
+        :return:
+          None
+        """
+
         if 'replay' in option:
             account_clone = self.account.data.copy()
 
@@ -76,4 +103,11 @@ class Manage:
         return self.invariant()
 
     def invariant(self):
+        """
+        Displays an error message on console if a user enters an incorrect command.
+
+        :return:
+          None
+        """
+
         pretty_print(console_messages['invariant'])

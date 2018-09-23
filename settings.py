@@ -4,8 +4,20 @@ from messages import settings as console_messages, common as common_console_mess
 
 
 class Settings:
+    """
+    Class for managing wallet settings.
+    """
+
     def __init__(self, account):
+        """
+        Account class instance
+        """
+
         self.account = account
+
+        """
+        Decides when to hide settings console view.
+        """
         self.keep_alive = False
 
         self.initialize()
@@ -16,6 +28,8 @@ class Settings:
 
     def get_current_settings(self):
         """
+        Gets current account settings.
+
         :return:
           dict (int, string, string)
         """
@@ -32,6 +46,15 @@ class Settings:
         }
 
     def manage_settings(self, command=None):
+        """
+        Updates account settings according to user's inputs.
+
+        :param command:
+          str: User's input command..
+
+        :return:
+          None
+        """
         # If command is passed, skip printing setting options
         if command is None:
             settings = self.get_current_settings()

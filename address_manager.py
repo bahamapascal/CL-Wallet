@@ -6,7 +6,15 @@ from balance import Balance
 
 
 class AddressManager:
+    """
+    Class for managing account addresses.
+    """
+
     def __init__(self, account):
+        """
+        Account class instance.
+        """
+
         self.account = account
 
     def generate_addresses_with_data(self, count, persist=False):
@@ -20,7 +28,7 @@ class AddressManager:
             Decides if addresses should be saved to file
 
         :return:
-            List of new generated addresses
+            list: List of new generated addresses
         """
 
         # Initialize address generator
@@ -62,6 +70,7 @@ class AddressManager:
 
     def format_addresses(self, addresses, indexes, balances):
         """
+        Formats account addresses
 
         :param addresses:
             List of addresses
@@ -73,7 +82,7 @@ class AddressManager:
             List of address balances
 
         :return:
-            List of formatted address data
+            list: List of formatted address data
         """
         addresses_with_data = []
 
@@ -90,6 +99,16 @@ class AddressManager:
         return addresses_with_data
 
     def generate(self, count):
+        """
+        Given a list of transactions for a bundle, filters output transactions.
+
+        :param count:
+          int: Number of addresses to generate.
+
+        :return:
+          None
+        """
+
         index_list = [-1]
         for data in self.account.data['account_data']['address_data']:
             index = data['index']
@@ -103,9 +122,9 @@ class AddressManager:
         as_encoded = self.account.seed if is_py2 else self.account.seed.encode('utf-8')
         generator = AddressGenerator(as_encoded)
 
-        '''
+        """
         This is the actual function to generate the address.
-        '''
+        """
         addresses = generator.get_addresses(start_index, count)
         i = 0
 
@@ -127,6 +146,13 @@ class AddressManager:
         balance_blueprint.write_fal_balance()
 
     def get_deposit_address(self):
+        """
+        Gets deposit address from account address information.
+
+        :return:
+          str: Deposit address
+        """
+
         try:
             l_index = self.account.data['account_data']['fal_balance']['l_index']
             if l_index == 0:
@@ -164,7 +190,7 @@ class AddressManager:
         Gets list of addresses with related data
 
         :return:
-            List of addresses with data (
+            list: List of addresses with data (
                 index,
                 checksum,
                 balance,
@@ -175,10 +201,10 @@ class AddressManager:
 
     def get_addresses(self):
         """
-        Gets list of all addresses
+        Gets list of all addresses.
 
         :return:
-            List of all addresses [ATE, YTK, DEI, ...]
+            list: List of all addresses [ATE, YTK, DEI, ...]
         """
         addresses_with_data = self.get_addresses_with_data()
 

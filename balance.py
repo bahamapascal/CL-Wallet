@@ -4,10 +4,28 @@ from iota import Address
 
 
 class Balance:
+    """
+    Class for managing account balance information.
+    """
+
     def __init__(self, account):
+        """
+        Account class instance
+        """
+
         self.account = account
 
     def find_balance(self, count):
+        """
+        Generates addresses and find balance against generated addresses.
+
+        :param count:
+          int: Number of addresses to generate.
+
+        :return:
+          None
+        """
+
         """
         Quick hack for avoiding circular imports        
         """
@@ -62,6 +80,16 @@ class Balance:
             pretty_print(balance_console_messages['no_address_with_balance'], color='red')
 
     def retrieve(self, address):
+        """
+        Finds balance for given address.
+
+        :param address:
+          str: Address.
+
+        :return:
+          int: Balance for address.
+        """
+
         api = Iota(self.account.data['account_data']['settings']['host'])
         gna_result = api.get_balances([Address(address).address])
         balance = gna_result['balances']
@@ -69,12 +97,35 @@ class Balance:
         return balance[0]
 
     def get_balances(self, addresses):
+        """
+        Finds balances for given addresses.
+
+        :param addresses:
+          list: Addresses.
+
+        :return:
+          list: Balances.
+        """
+
         api = Iota(self.account.data['account_data']['settings']['host'])
         gna_result = api.get_balances(addresses)
 
         return gna_result['balances']
 
     def write_fal_balance(self, f_index=0, l_index=0):
+        """
+        Writes updated account data to file.
+
+        :param f_index:
+          int: first index.
+
+        :param l_index:
+          int: last index.
+
+        :return:
+          None.
+        """
+
         account_clone = self.account.data.copy()
 
         if f_index > 0 and l_index > 0:
@@ -91,6 +142,13 @@ class Balance:
         self.account.update_data(account_clone)
 
     def update_fal_balance(self):
+        """
+        Updates account data with latest balance.
+
+        :return:
+          None.
+        """
+
         index_with_value = []
 
         for data in self.account.data['account_data']['address_data']:
@@ -105,6 +163,15 @@ class Balance:
             self.write_fal_balance(f_index, l_index)
 
     def update_addresses_balance(self, start_index=0):
+        """
+        Updates balance for addresses.
+
+        :param start_index:
+          int: Start index.
+
+        :return:
+          None.
+        """
 
         from helpers import pretty_print
 
@@ -123,10 +190,24 @@ class Balance:
             pretty_print(balance_console_messages['start_index_not_found'], color='red')
 
     def save_to_account_file(self, index, address, balance):
+        """
+        Saves updated address data to account file.
+
+        :param index:
+          int: Start index.
+
+        :param address:
+          str: Address.
+
+        :param balance:
+          int: Balance.
+
+        :return:
+          None.
+        """
 
         from helpers import address_checksum, get_checksum, is_py2
 
-        # Should not mutate here (address)
         address = address_checksum(address) if is_py2 else address_checksum(address.encode())
 
         account_clone = self.account.data.copy()

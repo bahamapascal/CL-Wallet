@@ -7,8 +7,20 @@ from address_manager import AddressManager
 
 
 class AccountInfo:
+    """
+    Contains account (Addresses) information.
+    """
+
     def __init__(self, account, standard=False):
+        """
+        Account class instance
+        """
+
         self.account = account
+
+        """
+        Decides whether to display full/partial account info.
+        """
         self.standard_account_info = standard
 
         if self.standard_account_info:
@@ -17,6 +29,16 @@ class AccountInfo:
             self.get_full_account_info()
 
     def render_full_account_information(self, address_data):
+        """
+        Displays full address information on console.
+
+        :param address_data:
+          list: Address related data.
+
+        :return:
+          None
+        """
+
         table_title = 'Full Account Information'
         table_data = [(
             ('Index', 'Address', 'Balance', 'Integrity')
@@ -30,7 +52,15 @@ class AccountInfo:
 
             has_valid_checksum = verify_checksum(checksum, address, self.account.seed)
 
-            table_data.insert(len(table_data), (index, address, balance, 'Valid Checksum' if has_valid_checksum else 'Invalid Checksum'))
+            table_data.insert(
+                len(table_data),
+                (
+                    index,
+                    address,
+                    balance,
+                    'Valid Checksum' if has_valid_checksum else 'Invalid Checksum'
+                )
+            )
 
         table_instance = SingleTable(table_data, table_title)
         table_instance.inner_row_border = True
@@ -38,6 +68,13 @@ class AccountInfo:
         pretty_print(table_instance.table, color='blue')
 
     def get_full_account_info(self):
+        """
+        Gets full account (addresses) information.
+
+        :return:
+          None
+        """
+
         balance_manager = Balance(self.account)
 
         balance_manager.update_addresses_balance(self.account.data['account_data']['fal_balance']['f_index'])
