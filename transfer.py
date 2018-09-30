@@ -8,14 +8,38 @@ from iota import Iota, ProposedTransaction, Address,\
 
 
 class Transfer:
+    """
+    Class for managing transfers.
+    """
+
     def __init__(self, account):
+        """
+        Account class instance.
+        """
+
         self.account = account
+
+        """
+        Decides when to hide transfer console view.
+        """
+
         self.keep_alive = True
+
+        """
+        Stores prepared inputs
+        """
         self.prepared = []
 
         self.prepare()
 
     def prepare(self):
+        """
+        Prepares transfer dicts.
+
+        :return:
+            None
+        """
+
         while self.keep_alive:
             get_recipient_address = True
 
@@ -98,6 +122,16 @@ class Transfer:
                 self.prepare()
 
     def get_user_input(self, prepared_transfers):
+        """
+        Gets user inputs for transfer related info (value, address etc)
+
+        :param prepared_transfers:
+            list: List of prepared transfers
+
+        :return:
+            None
+        """
+
         pretty_print(transfer_console_messages['number_and_unit_prompt'])
 
         balance_manager = Balance(self.account)
@@ -266,6 +300,13 @@ class Transfer:
                 )
 
     def review(self):
+        """
+        Displays transfers to console for user's review
+
+        :return:
+            None
+        """
+
         table_title = 'Review Transfers'
         table_data = [('Address', 'Value', 'Message', 'Tag')]
 
@@ -317,6 +358,13 @@ class Transfer:
                 pretty_print(common_console_messages['try_again'], color='red')
 
     def get_inputs(self):
+        """
+        Gets input addresses
+
+        :return:
+            list: Input addresses.
+        """
+
         inputs = []
 
         for p in self.account.data['account_data']['address_data']:
@@ -333,6 +381,13 @@ class Transfer:
         return inputs
 
     def send(self):
+        """
+        Sends transfer to the tangle.
+
+        :return:
+            None
+        """
+
         pretty_print(transfer_console_messages['sending_transfer'])
 
         address_manager = AddressManager(self.account)

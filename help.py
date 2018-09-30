@@ -4,6 +4,9 @@ from messages import help as console_messages
 
 
 class Help:
+    """
+    Class for managing "help" command.
+    """
     def __init__(self):
         self.table_title = 'Help Section'
         self.table_data = (
@@ -25,6 +28,13 @@ class Help:
         self.print_content()
 
     def print_content(self):
+        """
+        Prints help section content to console.
+
+        :return:
+          None
+        """
+
         table_instance = SingleTable(self.table_data, self.table_title)
         table_instance.inner_row_border = True
 

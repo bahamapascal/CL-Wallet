@@ -59,11 +59,9 @@ account_info = dict(
 )
 
 account_history = dict(
-    new_transactions='\n\n\nNew transactions.',
-    old_transactions='\n\n\nOld transactions.',
-    full_transactions_history='\n\n\nFull transactions.',
-    transactions_to_from='\nTransactions to/from {}',
-    no_transactions_history='No transactions in history'
+    no_transactions_history='No transactions in history',
+    no_transaction_message='No transaction message',
+    transaction='Transaction'
 )
 
 address_manager = dict(
